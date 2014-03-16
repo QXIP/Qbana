@@ -43,6 +43,8 @@
       description : "Displays a hive plot based on a source and a destination field."
     };
 
+    $scope.dashboard = dashboard;
+
     // Set and populate defaults
     var _d = {
       /** @scratch /panels/hive/3
@@ -199,7 +201,11 @@ _.each(results.facets.dst_terms.terms, function(v) {
 
           // compute the nodes and the links
           var links = [], nodes = {};
+          var max_value = 0;
           _.each(scope.data.connections, function(v, conn) {
+            if (v === 0) {
+              return;
+            }
             var src = conn.substring(0, conn.indexOf('->')),
               dst = conn.substring(conn.indexOf('->') + 2, conn.length),
               link = {};
@@ -207,13 +213,18 @@ _.each(results.facets.dst_terms.terms, function(v) {
             link.source = nodes[src] || (nodes[src] = {name: src});
             link.target = nodes[dst] || (nodes[dst] = {name: dst});
 
-            link.value = +1.2;
+            link.value = v;
+            if (v > max_value) {
+              max_value = v;
+            }
 
             links.push(link);
           });
 
           console.log("Links", links);
           console.log("Nodes", d3.values(nodes));
+
+          var style = scope.dashboard.current.style;
 
           var width = $(elem[0]).width(),
             height = $(elem[0]).height();
@@ -222,7 +233,7 @@ _.each(results.facets.dst_terms.terms, function(v) {
             .nodes(d3.values(nodes))
             .links(links)
             .size([width, height])
-            .linkDistance(80)
+            .linkDistance(120)
             .charge(-300)
             .on("tick", tick)
             .start();
@@ -242,6 +253,7 @@ _.each(results.facets.dst_terms.terms, function(v) {
               .attr("markerWidth", 6)
               .attr("markerHeight", 6)
               .attr("orient", "auto")
+              .style("fill", "#8c8c8c")
             .append("svg:path")
               .attr("d", "M0,-5L10,0L0,5");
 
@@ -249,12 +261,13 @@ _.each(results.facets.dst_terms.terms, function(v) {
           var path = svg.append("svg:g").selectAll("path")
               .data(force.links())
             .enter().append("svg:path")
-          //    .attr("class", function(d) { return "link " + d.type; })
               .attr("class", "link-path")
-              .attr("marker-end", "url(#end)")
+              //.attr("marker-end", "url(#end)")
               .style('fill', 'none')
               .style('stroke', '#8c8c8c')
-              .style('stroke-width', '1.5px');
+              .style('stroke-width', function (link) {
+                  return (0.5 + (link.value * 2) / max_value) + 'px';
+                });
 
           // define the nodes
           var node = svg.selectAll(".node")
@@ -265,14 +278,28 @@ _.each(results.facets.dst_terms.terms, function(v) {
 
           // add the nodes
           node.append("circle")
-              .attr("r", 5)
-              .fill('fill', '#8c8c8c');
+              .attr("r", 10)
+              .style('fill', '#8c8c8c')
+              .on('mouseover', function(d) {
+                console.log('Node: ', d);
+                var nodeSelection = d3.select(this).style('fill', '#7ab6b6');
+                svg.selectAll('.link-path')
+                  .filter(function(link) {
+                      return link.source === d || link.target === d;
+                    })
+                  .style('stroke', '#7ab6b6')
+              })
+              .on('mouseout', function(d) {
+                d3.select(this).style('fill', '#8c8c8c');
+                svg.selectAll('.link-path')
+                  .style('stroke', '#8c8c8c');
+              });
 
           // add the text
           node.append("text")
               .attr("x", 12)
               .attr("dy", ".35em")
-              .fill('fill', '#8c8c8c')
+              .style('fill', style == 'light' ? '#222' : '#eee')
               .text(function(d) { return d.name; });
 
           // add the curvy lines
