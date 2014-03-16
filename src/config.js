@@ -63,6 +63,7 @@ function (Settings) {
       'timepicker',
       'text',
       'hits',
+      'hive',
       'column',
       'trends',
       'bettermap',
