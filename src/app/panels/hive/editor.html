@@ -1,20 +1,16 @@
 <div class="editor-row">
   <div class="editor-option">
 	<form>
-	  <h6>Source Field <tip>Field containing the source IP address</tip></h6>
+	  <h6>Source Field <tip>Field containing the source of the transaction (source IP address, source device, etc.)</tip></h6>
 	  <input bs-typeahead="fields.list" type="text" class="input-small" ng-model="panel.src_field" ng-change="set_refresh(true)">
 	</form>
   </div>
 
   <div class="editor-option">
 	<form>
-	  <h6>Destination Field <tip>Field containing the destination IP address</tip></h6>
+	  <h6>Target Field <tip>Field containing the destination of the transactions (destination IP address, destination device, etc.)</tip></h6>
 	  <input bs-typeahead="fields.list" type="text" class="input-small" ng-model="panel.dst_field" ng-change="set_refresh(true)">
 	</form>
-  </div>
-
-  <div class="editor-option"><h6>Hive</h6>
-	<select ng-change="$emit('render')" class="input-small" ng-model="panel.map" ng-options="f for f in ['world','europe','usa']"></select>
   </div>
 </div>
 
