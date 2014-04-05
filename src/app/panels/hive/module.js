@@ -233,8 +233,8 @@ _.each(results.facets.dst_terms.terms, function(v) {
             .nodes(d3.values(nodes))
             .links(links)
             .size([width, height])
-            .linkDistance(120)
-            .charge(-300)
+            .linkDistance(150)
+            .charge(-1200)
             .on("tick", tick)
             .start();
 
@@ -253,7 +253,7 @@ _.each(results.facets.dst_terms.terms, function(v) {
               .attr("markerWidth", 6)
               .attr("markerHeight", 6)
               .attr("orient", "auto")
-              .style("fill", "#8c8c8c")
+              .style("fill", "#2980b9")
             .append("svg:path")
               .attr("d", "M0,-5L10,0L0,5");
 
@@ -278,8 +278,8 @@ _.each(results.facets.dst_terms.terms, function(v) {
 
           // add the nodes
           node.append("circle")
-              .attr("r", 10)
-              .style('fill', '#8c8c8c')
+              .attr("r", 25)
+              .style('fill', '#2980b9')
               .on('mouseover', function(d) {
                 console.log('Node: ', d);
                 var nodeSelection = d3.select(this).style('fill', '#7ab6b6');
@@ -290,15 +290,15 @@ _.each(results.facets.dst_terms.terms, function(v) {
                   .style('stroke', '#7ab6b6')
               })
               .on('mouseout', function(d) {
-                d3.select(this).style('fill', '#8c8c8c');
+                d3.select(this).style('fill', '#2980b9');
                 svg.selectAll('.link-path')
                   .style('stroke', '#8c8c8c');
               });
 
           // add the text
           node.append("text")
-              .attr("x", 12)
-              .attr("dy", ".35em")
+              .attr("x", 27)
+              .attr("dy", ".5em")
               .style('fill', style == 'light' ? '#222' : '#eee')
               .text(function(d) { return d.name; });
 
