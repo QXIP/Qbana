@@ -23,6 +23,7 @@ properties. See the panel types list to the right.
 include::panels/bettermap.asciidoc[]
 
 include::panels/column.asciidoc[]
+include::panels/force.asciidoc[]
 
 include::panels/goal.asciidoc[]
 

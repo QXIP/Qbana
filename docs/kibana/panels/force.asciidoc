@@ -1,0 +1,9 @@
+== Force diagram
+Status: *Experimental*
+
+This panel creates a force chart between the src_ip and dst_ip fields.
+spyable:: Setting spyable to false disables the inspect icon.
+==== Queries
+queries object:: This object describes the queries to use on this panel.
+queries.mode::: Of the queries available, which to use. Options: +all, pinned, unpinned, selected+
+queries.ids::: In +selected+ mode, which query ids are selected.

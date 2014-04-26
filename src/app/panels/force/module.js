@@ -3,7 +3,7 @@
  */
 
 /** @scratch /panels/force/0
- * == Hive
+ * == Force diagram
  * Status: *Experimental*
  *
  * This panel creates a force chart between the src_ip and dst_ip fields.
