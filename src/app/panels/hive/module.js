@@ -9,13 +9,13 @@
  * This panel creates a hive chart between the src_ip and dst_ip fields.
  */
 
- define([
+define([
   'angular',
   'app',
   'lodash',
   'jquery',
   'http://d3js.org/d3.v3.js'
- ],
+],
  function (angular, app, _, $, d3) {
   'use strict';
   var module = angular.module('kibana.panels.hive', []);
@@ -122,12 +122,12 @@
 
       request.doSearch().then(function(results) {
 
-        $scope.data.src_terms = []
+        $scope.data.src_terms = [];
         _.each(results.facets.src_terms.terms, function(v) {
           $scope.data.src_terms.push(v.term);
         });
-        $scope.data.dst_terms = []
-_.each(results.facets.dst_terms.terms, function(v) {
+        $scope.data.dst_terms = [];
+        _.each(results.facets.dst_terms.terms, function(v) {
           $scope.data.dst_terms.push(v.term);
         });
 
@@ -141,17 +141,17 @@ _.each(results.facets.dst_terms.terms, function(v) {
 
             request = request
               .facet(ejs.FilterFacet(src + '->' + dst)
-                .filter(ejs.AndFilter([
-                  ejs.TermFilter($scope.panel.src_field, src),
-                  ejs.TermFilter($scope.panel.dst_field, dst)
-                ]))
-              ).size(0)
+              .filter(ejs.AndFilter([
+                ejs.TermFilter($scope.panel.src_field, src),
+                ejs.TermFilter($scope.panel.dst_field, dst)
+              ]))
+              ).size(0);
 
           });
         });
 
         request.doSearch().then(function (results) {
-          $scope.data.connections = {}
+          $scope.data.connections = {};
           _.each(results.facets, function(v, name) {
             $scope.data.connections[name] = v.count;
           });
@@ -224,6 +224,26 @@ _.each(results.facets.dst_terms.terms, function(v) {
           console.log("Links", links);
           console.log("Nodes", d3.values(nodes));
 
+          // add the curvy lines
+          function tick() {
+            path.attr("d", function(d) {
+              var dx = d.target.x - d.source.x,
+                dy = d.target.y - d.source.y,
+                dr = Math.sqrt(dx * dx + dy * dy);
+              return "M" +
+                d.source.x + "," +
+                d.source.y + "A" +
+                dr + "," + dr + " 0 0,1 " +
+                d.target.x + "," +
+                d.target.y;
+            });
+
+            node
+              .attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+              });
+          }
+
           var style = scope.dashboard.current.style;
 
           var width = $(elem[0]).width(),
@@ -282,14 +302,14 @@ _.each(results.facets.dst_terms.terms, function(v) {
               .style('fill', '#2980b9')
               .on('mouseover', function(d) {
                 console.log('Node: ', d);
-                var nodeSelection = d3.select(this).style('fill', '#7ab6b6');
+                d3.select(this).style('fill', '#7ab6b6');
                 svg.selectAll('.link-path')
                   .filter(function(link) {
                       return link.source === d || link.target === d;
                     })
-                  .style('stroke', '#7ab6b6')
+                  .style('stroke', '#7ab6b6');
               })
-              .on('mouseout', function(d) {
+              .on('mouseout', function() {
                 d3.select(this).style('fill', '#2980b9');
                 svg.selectAll('.link-path')
                   .style('stroke', '#8c8c8c');
@@ -299,30 +319,12 @@ _.each(results.facets.dst_terms.terms, function(v) {
           node.append("text")
               .attr("x", 27)
               .attr("dy", ".5em")
-              .style('fill', style == 'light' ? '#222' : '#eee')
+              .style('fill', style === 'light' ? '#222' : '#eee')
               .text(function(d) { return d.name; });
 
-          // add the curvy lines
-          function tick() {
-            path.attr("d", function(d) {
-              var dx = d.target.x - d.source.x,
-                dy = d.target.y - d.source.y,
-                dr = Math.sqrt(dx * dx + dy * dy);
-              return "M" +
-                d.source.x + "," +
-                d.source.y + "A" +
-                dr + "," + dr + " 0 0,1 " +
-                d.target.x + "," +
-                d.target.y;
-            });
-
-            node
-              .attr("transform", function(d) {
-              return "translate(" + d.x + "," + d.y + ")"; });
-          }
         }
       }
-    }
+    };
   });
 
- });
+});
