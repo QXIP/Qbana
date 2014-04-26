@@ -1,12 +1,12 @@
 /** @scratch /panels/5
- * include::panels/hive.asciidoc[]
+ * include::panels/force.asciidoc[]
  */
 
-/** @scratch /panels/hive/0
+/** @scratch /panels/force/0
  * == Hive
  * Status: *Experimental*
  *
- * This panel creates a hive chart between the src_ip and dst_ip fields.
+ * This panel creates a force chart between the src_ip and dst_ip fields.
  */
 
 define([
@@ -18,14 +18,14 @@ define([
 ],
  function (angular, app, _, $, d3) {
   'use strict';
-  var module = angular.module('kibana.panels.hive', []);
+  var module = angular.module('kibana.panels.force', []);
   app.useModule(module);
 
-  console.log('hive module loaded');
+  console.log('force module loaded');
 
-  module.controller('hive', function($scope, $rootScope, querySrv, dashboard, filterSrv) {
+  module.controller('force', function($scope, $rootScope, querySrv, dashboard, filterSrv) {
 
-    console.log('hive controller loaded');
+    console.log('force controller loaded');
 
     $scope.panelMeta = {
       editorTabs : [
@@ -40,14 +40,14 @@ define([
         }
       ],
       status  : "Experimental",
-      description : "Displays a hive plot based on a source and a destination field."
+      description : "Displays a force plot based on a source and a destination field."
     };
 
     $scope.dashboard = dashboard;
 
     // Set and populate defaults
     var _d = {
-      /** @scratch /panels/hive/3
+      /** @scratch /panels/force/3
        * spyable:: Setting spyable to false disables the inspect icon.
        */
       spyable : true,
@@ -55,7 +55,7 @@ define([
        * size:: Max number of nodes to draw
        */
       size    : 50,
-      /** @scratch /panels/hive/5
+      /** @scratch /panels/force/5
        * ==== Queries
        * queries object:: This object describes the queries to use on this panel.
        * queries.mode::: Of the queries available, which to use. Options: +all, pinned, unpinned, selected+
@@ -69,12 +69,12 @@ define([
     _.defaults($scope.panel,_d);
 
     $scope.init = function() {
-      console.log('hive scope init');
+      console.log('force scope init');
       $scope.get_data();
     };
 
     $scope.get_data = function() {
-      console.log('hive scope get_data');
+      console.log('force scope get_data');
 
       $scope.panelMeta.loading = true;
 
@@ -174,7 +174,7 @@ define([
 
   });
 
-  module.directive('hive', function() {
+  module.directive('force', function() {
     return {
       restrict: 'A',
       link: function(scope, elem) {
@@ -194,7 +194,7 @@ define([
         });
 
         function render_panel() {
-          console.log('hive render event received');
+          console.log('force render event received');
           elem.css({height:scope.panel.height||scope.row.height});
           elem.text('');
           scope.panelMeta.loading = false;

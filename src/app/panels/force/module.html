@@ -1,0 +1,22 @@
+<div ng-controller='force' ng-init="init()">
+  <style>
+      path.link-path {
+        fill: none;
+        stroke: #666;
+        stroke-width: 1.5px;
+      }
+
+      circle {
+        fill: #8c8c8c;
+        stroke: #8c8c8c;
+        stroke-width: 1.5px;
+      }
+
+      text {
+        fill: #8c8c8c;
+        font: 10px sans-serif;
+        pointer-events: none;
+      }
+  </style>
+  <div force params="{{panel}}" ng-style="{height:panel.height||row.height}"></div>
+</div>
