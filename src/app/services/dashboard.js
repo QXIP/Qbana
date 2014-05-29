@@ -37,6 +37,9 @@ function (angular, $, kbn, _, config, moment, Modernizr) {
       ],
       nav: [
         {
+          type: 'dashboard_dropdown'
+        },
+        {
           type: 'timepicker'
         }
       ],
