@@ -38,18 +38,35 @@ define([
         }
       ],
       status  : "Experimental",
-      description : "Displays a force plot based on a source and a destination field."
+      description : "This panel creates a diagram for visualizing the response " +
+        "times data in colored grid. The X axis is the time, the Y axis is the " +
+        "response time and the Z axis (color codified) is the count from each bucket."
     };
 
     // Set and populate defaults
     var _d = {
 
-      /** @scratch /panels/force/3
-       * spyable:: Setting spyable to false disables the inspect icon.
+      /** @scratch /panels/heatmap/3
+       * responsetime_field:: Field containing the response time information.
        */
-      spyable : true,
+      responsetime_field : "responsetime",
 
-      /** @scratch /panels/force/5
+      /** @scratch /panels/heatmap/3
+       * timestamp_field:: Field containing the timestamp information.
+       */
+      timestamp_field : "@timestamp",
+
+      /** @scratch /panels/heatmap/3
+       * nbuckets:: In how many buckets to split the Y axis.
+       */
+      nbuckets : 10,
+
+      /** @scratch /panels/heatmap/3
+       * nintervals:: In how many intervals to split the X axis.
+       */
+      nintervals : 100,
+
+      /** @scratch /panels/heatmap/5
        * ==== Queries
        * queries object:: This object describes the queries to use on this panel.
        * queries.mode::: Of the queries available, which to use. Options: +all, pinned, unpinned, selected+
@@ -64,6 +81,14 @@ define([
 
     $scope.init = function() {
       console.log("heapmap scope init");
+      $scope.get_data();
+    };
+
+    $scope.get_data = function() {
+      console.log('heatmap scope get_data');
+
+      $scope.panelMeta.loading = true;
+
     };
 
   });
@@ -76,8 +101,22 @@ define([
         console.log('link function called');
 
         elem.html('<center><img src="img/load_big.gif"></center>');
+
+        // Receive render events
+        scope.$on('render',function(){
+          render_panel();
+        });
+
+        // Or if the window is resized
+        angular.element(window).bind('resize', function(){
+          render_panel();
+        });
+
+        function render_panel() {
+          console.log('heatmap render event received');
+        }
       }
-    }
+    };
   });
 
 });
