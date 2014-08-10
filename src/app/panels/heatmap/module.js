@@ -176,11 +176,14 @@ define([
           _.each($scope.data.buckets, function(bucket) {
 
               facet = ejs.DateHistogramFacet(bucket[0] + '->' + bucket[1])
-                .field($scope.panel.responsetime_field)
-                .facetFilter(
+                .field($scope.panel.timestamp_field)
+                .global(true)
+                .facetFilter(ejs.AndFilter([
                   ejs.RangeFilter($scope.panel.responsetime_field)
                     .from(bucket[0])
-                    .to(bucket[1])
+                    .to(bucket[1]),
+                    filterSrv.getBoolFilter(filterSrv.ids())
+                  ])
                 )
                 .interval(_interval);
 
