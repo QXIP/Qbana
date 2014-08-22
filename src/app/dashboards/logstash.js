@@ -8,9 +8,10 @@
  * index :: Which index to search? If this is specified, interval is set to 'none'
  * pattern :: Does nothing if index is specified. Set a timestamped index pattern. Default: [logstash-]YYYY.MM.DD
  * interval :: Sets the index interval (eg: day,week,month,year), Default: day
- *
+ * 
  * split :: The character to split the queries on Default: ','
  * query :: By default, a comma separated list of queries to run. Default: *
+ * filter :: By default, a comma separated list of filters to run. Default: timerange
  *
  * from :: Search this amount of time back, eg 15m, 1h, 2d. Default: 15m
  * timefield :: The field containing the time to filter on, Default: @timestamp
@@ -23,7 +24,7 @@
 'use strict';
 
 // Setup some variables
-var dashboard, queries, _d_timespan;
+var dashboard, queries, ufilters, _d_timespan;
 
 // All url parameters are available via the ARGS object
 var ARGS;
@@ -84,9 +85,37 @@ dashboard.services.query = {
   ids : _.map(_.keys(queries),function(v){return parseInt(v,10);})
 };
 
-// Lets also add a default time filter, the value of which can be specified by the user
-dashboard.services.filter = {
-  list: {
+// In this dashboard we let users pass filters as comma seperated list to the filter parameter.
+// Or they can specify a split character using the split aparameter (same as for query)
+// If filter is defined, split it into a list of filter objects
+// NOTE: ids must be integers, hence the parseInt()s
+if(!_.isUndefined(ARGS.filter)) {
+  ufilters = _.object(_.map(ARGS.filter.split(ARGS.split||','), function(v,k) {
+    // parameters are in key:param format
+    var uparam = v.split(':');
+    return [k+1,{
+      query: uparam[1],
+      field: uparam[0],
+      type: 'field',
+      mandate: 'must',
+      active: true,
+      alias: '',
+      id: parseInt(k+1,10),
+    }];
+  }));
+  // merge with timerange parameters
+    var defnow = {
+      from: "now-"+(ARGS.from||_d_timespan),
+      to: "now",
+      field: ARGS.timefield||"@timestamp",
+      type: "time",
+      active: true,
+      id: 0,
+  };
+  ufilters = _.union(defnow,_.map(ufilters, function(v){return v;}));
+} else {
+  // No parameters passed? Initialize default timerange filter
+  ufilters = {
     0: {
       from: "now-"+(ARGS.from||_d_timespan),
       to: "now",
@@ -95,9 +124,15 @@ dashboard.services.filter = {
       active: true,
       id: 0,
     }
-  },
-  ids: [0]
+  };
+}
+
+// Add the customer filters
+dashboard.services.filter = {
+  list : ufilters,
+  ids : _.map(_.keys(ufilters),function(v){return parseInt(v,10);})
 };
+
 
 // Ok, lets make some rows. The Filters row is collapsed by default
 dashboard.rows = [
