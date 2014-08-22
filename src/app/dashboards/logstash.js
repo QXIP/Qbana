@@ -24,7 +24,7 @@
 'use strict';
 
 // Setup some variables
-var dashboard, queries, ufilters, _d_timespan;
+var dashboard, queries, filters, _d_timespan;
 
 // All url parameters are available via the ARGS object
 var ARGS;
@@ -90,7 +90,7 @@ dashboard.services.query = {
 // If filter is defined, split it into a list of filter objects
 // NOTE: ids must be integers, hence the parseInt()s
 if(!_.isUndefined(ARGS.filter)) {
-  ufilters = _.object(_.map(ARGS.filter.split(ARGS.split||','), function(v,k) {
+  filters = _.object(_.map(ARGS.filter.split(ARGS.split||','), function(v,k) {
     // parameters are in key:param format
     var uparam = v.split(':');
     return [k+1,{
@@ -112,10 +112,10 @@ if(!_.isUndefined(ARGS.filter)) {
       active: true,
       id: 0,
   };
-  ufilters = _.union(defnow,_.map(ufilters, function(v){return v;}));
+  filters = _.union(defnow,_.map(filters, function(v){return v;}));
 } else {
   // No parameters passed? Initialize default timerange filter
-  ufilters = {
+  filters = {
     0: {
       from: "now-"+(ARGS.from||_d_timespan),
       to: "now",
@@ -129,8 +129,8 @@ if(!_.isUndefined(ARGS.filter)) {
 
 // Add the customer filters
 dashboard.services.filter = {
-  list : ufilters,
-  ids : _.map(_.keys(ufilters),function(v){return parseInt(v,10);})
+  list : filters,
+  ids : _.map(_.keys(filters),function(v){return parseInt(v,10);})
 };
 
 
