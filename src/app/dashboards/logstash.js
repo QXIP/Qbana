@@ -11,6 +11,7 @@
  *
  * split :: The character to split the queries on Default: ','
  * query :: By default, a comma separated list of queries to run. Default: *
+ * filter :: By default, a comma separated list of filters to run. Default: timerange
  *
  * from :: Search this amount of time back, eg 15m, 1h, 2d. Default: 15m
  * timefield :: The field containing the time to filter on, Default: @timestamp
@@ -23,7 +24,7 @@
 'use strict';
 
 // Setup some variables
-var dashboard, queries, _d_timespan;
+var dashboard, queries, filters, _d_timespan;
 
 // All url parameters are available via the ARGS object
 var ARGS;
@@ -84,19 +85,58 @@ dashboard.services.query = {
   ids : _.map(_.keys(queries),function(v){return parseInt(v,10);})
 };
 
-// Lets also add a default time filter, the value of which can be specified by the user
-dashboard.services.filter = {
-  list: {
-    0: {
-      from: "now-"+(ARGS.from||_d_timespan),
-      to: "now",
-      field: ARGS.timefield||"@timestamp",
-      type: "time",
+// Set default time filter, the value of which can be specified by the user
+var timefilter = {
+  from: "now-"+(ARGS.from||_d_timespan),
+  to: "now",
+  field: ARGS.timefield||"@timestamp",
+  type: "time",
+  active: true,
+  id: 0,
+};
+  
+// In this dashboard we let users pass filters as comma seperated triplets to the filter parameter.
+// Or they can specify a split character using the split aparameter (same as for query)
+// If a filter is defined, its values get split it into a list of filter objects 
+// Filter parameters expected as field:query{:mandate} (where mandate is optional, using the cases below)
+// NOTE: ids must be integers, hence the parseInt()s - User filter Ids start with 1 to include time filter at 0
+if(!_.isUndefined(ARGS.filter)) {
+  filters = _.object(_.map(ARGS.filter.split(ARGS.split||','), function(v,k) {
+    var mandate; var uparam = v.split(':');
+      switch(uparam[2]){
+        case '1':
+          mandate="must"
+          break;
+        case '0':
+          mandate="mustNot"
+          break;
+        case '2':
+          mandate="either"
+          break;
+        default:
+          mandate="must"
+      }
+    return [k+1,{
+      query: uparam[1],
+      field: uparam[0],
+      type: 'field',
+      mandate: mandate,
       active: true,
-      id: 0,
-    }
-  },
-  ids: [0]
+      alias: '',
+      id: parseInt(k+1,10),
+    }];
+  }));
+  // merge with default time filter, the value of which can be specified by the user
+  filters = _.union(timefilter,_.map(filters, function(v){return v;}));
+} else {
+  // No parameters passed? Initialize default time filter, the value of which can be specified by the user
+  filters = _.union(timefilter);
+}
+
+// Add the customer filter(s)
+dashboard.services.filter = {
+  list : filters,
+  ids : _.map(_.keys(filters),function(v){return parseInt(v,10);})
 };
 
 // Ok, lets make some rows. The Filters row is collapsed by default
