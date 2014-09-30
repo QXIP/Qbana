@@ -14,7 +14,8 @@ define([
   'app',
   'lodash',
   'jquery',
-  'http://d3js.org/d3.v3.js'
+  'http://d3js.org/d3.v3.js',
+  'https://raw.githubusercontent.com/d3/d3-plugins/master/sankey/sankey.js'
 ],
  function (angular, app, _, $, d3) {
   'use strict';
