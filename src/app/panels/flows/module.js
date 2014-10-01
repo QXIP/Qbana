@@ -15,7 +15,7 @@ define([
   'lodash',
   'jquery',
   'http://d3js.org/d3.v3.js',
-  'http://bost.ocks.org/mike/sankey/sankey.js'
+  './lib/sankey'
 ],
  function (angular, app, _, $, d3) {
   'use strict';
@@ -225,6 +225,7 @@ define([
           console.log("Links", links);
           console.log("Nodes", d3.values(nodes));
 
+          /*
           // add the curvy lines
           function tick() {
             path.attr("d", function(d) {
@@ -244,6 +245,8 @@ define([
                 return "translate(" + d.x + "," + d.y + ")";
               });
           }
+          
+          */
 
           var style = scope.dashboard.current.style;
 
