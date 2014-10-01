@@ -1,3 +1,28 @@
 <div ng-controller='flows' ng-init="init()">
+  <head>
+  	<script type="text/javascript" src="app/panels/flows/lib/sankey.js"></script>
+	<style>
+	.node rect {
+	  cursor: move;
+	  fill-opacity: .9;
+	  shape-rendering: crispEdges;
+	}
+	
+	.node text {
+	  pointer-events: none;
+	  text-shadow: 0 1px 0 #fff;
+	}
+	
+	.link {
+	  fill: none;
+	  stroke: #000;
+	  stroke-opacity: .2;
+	}
+	
+	.link:hover {
+	  stroke-opacity: .5;
+	}
+	</style>
+  </head>
   <div flows params="{{panel}}" ng-style="{height:panel.height||row.height}"></div>
 </div>
