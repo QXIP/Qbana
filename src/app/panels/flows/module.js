@@ -230,7 +230,7 @@ define([
 
           var style = scope.dashboard.current.style;
 
-          var margin = {top: 1, right: 1, bottom: 6, left: 1};
+          var margin = {top: 10, right: 1, bottom: 6, left: 1};
           var width = $(elem[0]).width() - margin.left - margin.right;
           var height = $(elem[0]).height() - margin.top - margin.bottom;
           
