@@ -21,11 +21,7 @@ define([
   var module = angular.module('kibana.panels.flows', []);
   app.useModule(module);
 
-  // console.log('flows module loaded');
-
   module.controller('flows', function($scope, $rootScope, querySrv, dashboard, filterSrv) {
-
-    // console.log('flows controller loaded');
 
     $scope.panelMeta = {
       editorTabs : [
@@ -127,7 +123,6 @@ define([
 		 var found = $scope.data.nodes.some(function (el) {
                     return el.name === node;
                   });
-		 // LEGEND: node: {position}, name: {name}
 		 if (!found)  $scope.data.nodes.push({ node: $scope.data.nodes.length, name: node });
 	}
 
@@ -166,16 +161,11 @@ define([
 	// QXIP: build links for sankey 
         $scope.data.links = [];
 	var linkIt = function(conn,count){
-	      // Find src, dst
 	      var src = conn.substring(0, conn.indexOf('->')),
               dst = conn.substring(conn.indexOf('->') + 2, conn.length);
-	      // Find position
+
 	      var srcindex = $scope.data.nodes.map(function(e) { return e.name; }).indexOf(src),
 	      dstindex = $scope.data.nodes.map(function(e) { return e.name; }).indexOf(dst);
-
-	      // if ($scope.data.links) {
-	      // 	var srctest = $scope.data.links.map(function(e) { return e.source; }).indexOf(dstindex);
-	      // }
 
 	      // Push to array w/ direction correction (by sankey design)
 	      if (srcindex === dstindex ) {
@@ -255,21 +245,22 @@ define([
             .append("g")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-	var data = { "nodes" : [
-	{"node":0,"name":"client A"},
-	{"node":1,"name":"client B"},
-	{"node":2,"name":"proxy"},
-	{"node":3,"name":"server X"},
-	{"node":4,"name":"server Y"}
-	],
-	"links" : [
-	{"source":0,"target":2,"value":2},
-	{"source":1,"target":2,"value":3},
-	{"source":1,"target":2,"value":1},
-	{"source":2,"target":3,"value":4},
-	{"source":2,"target":4,"value":1}
-	] };
+	/* 
+		// EXAMPLE DATA:
+		var data = { "nodes" : [
+		{"node":0,"name":"client A"},
+		{"node":1,"name":"client B"},
+		{"node":2,"name":"proxy"},
+		{"node":3,"name":"server X"},
+		{"node":4,"name":"server Y"}
+		],
+		"links" : [
+		{"source":0,"target":2,"value":2},
+		{"source":1,"target":2,"value":3},
+		{"source":2,"target":3,"value":4},
+		{"source":2,"target":4,"value":1}
+		] };
+	*/
 	  
 	var data = {
 	 "nodes" : scope.data.nodes,
@@ -332,7 +323,9 @@ define([
             d3.select(this).attr("transform", "translate(" + d.x + "," + (d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))) + ")");
             flows.relayout();
             link.attr("d", path);
-          }  
+          }
+  
+
 
         }
       }
