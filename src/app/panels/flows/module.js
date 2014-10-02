@@ -3,10 +3,10 @@
  */
 
 /** @scratch /panels/flows/0
- * == Flows diagram
+ * == Flows diagram (QXIP)
  * Status: *Experimental*
  *
- * This panel creates a sanjay chart between the src_ip and dst_ip fields.
+ * This panel generates a D3/sanjay flow between the src_ip and dst_ip fields.
  */
 
 define([
@@ -47,11 +47,19 @@ define([
        * spyable:: Setting spyable to false disables the inspect icon.
        */
       spyable : true,
-      /** @scratch /panels/map/3
+      /** @scratch /panels/flows/3
        * size:: Max number of nodes to draw
        */
       size    : 50,
-      /** @scratch /panels/flows/5
+      /** @scratch /panels/flows/3
+       * exclude:: terms to exclude from the results
+       */
+      exclude : [],
+      /** @scratch /panels/terms/3
+       * tmode:: Facet mode: terms or terms_stats
+       */
+      tmode       : 'terms',
+      /** @scratch /panels/flows/3
        * ==== Queries
        * queries object:: This object describes the queries to use on this panel.
        * queries.mode::: Of the queries available, which to use. Options: +all, pinned, unpinned, selected+
@@ -80,6 +88,7 @@ define([
 
       $scope.panel.queries.ids = querySrv.idsByMode($scope.panel.queries);
 
+
       queries = querySrv.getQueryObjs($scope.panel.queries.ids);
       boolQuery = $scope.ejs.BoolQuery();
       _.each(queries,function(q) {
@@ -92,6 +101,7 @@ define([
         .facet($scope.ejs.TermsFacet('src_terms')
           .field($scope.panel.src_field)
           .size($scope.panel.size)
+	  .exclude($scope.panel.exclude)
           .facetFilter($scope.ejs.QueryFilter(
             $scope.ejs.FilteredQuery(
               boolQuery,
@@ -102,6 +112,7 @@ define([
         .facet($scope.ejs.TermsFacet('dst_terms')
           .field($scope.panel.dst_field)
           .size($scope.panel.size)
+	  .exclude($scope.panel.exclude)
           .facetFilter($scope.ejs.QueryFilter(
             $scope.ejs.FilteredQuery(
               boolQuery,
@@ -125,6 +136,7 @@ define([
                   });
 		 if (!found)  $scope.data.nodes.push({ node: $scope.data.nodes.length, name: node });
 	}
+
 
         $scope.data.src_terms = [];
         _.each(results.facets.src_terms.terms, function(v) {
@@ -301,7 +313,7 @@ define([
               .on("drag", dragmove));
         
           node.append("rect")
-              .attr("height", function(d) { return d.dy; })
+              .attr("height", function(d) { return Math.max(1.0, d.dy); })
               .attr("width", flows.nodeWidth())
               .style("fill", function(d) { return d.color = color(d.name.replace(/ .*/, "")); })
               .style("stroke", function(d) { return d3.rgb(d.color).darker(2); })

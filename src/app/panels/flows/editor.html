@@ -12,4 +12,11 @@
 	  <input bs-typeahead="fields.list" type="text" class="input-small" ng-model="panel.dst_field" ng-change="set_refresh(true)">
 	</form>
   </div>
+
+  <div class="editor-option"  ng-show="panel.tmode == 'terms'">
+	<form>
+	  <h6>Exclude <tip>Field containing Terms to exclude (comma separated)</tip></h6>
+	  <input array-join type="text" class="input-small" ng-model="panel.exclude" ng-change="set_refresh(true)">
+	</form>
+  </div>
 </div>
