@@ -21,11 +21,11 @@ define([
   var module = angular.module('kibana.panels.flows', []);
   app.useModule(module);
 
-  console.log('flows module loaded');
+  // console.log('flows module loaded');
 
   module.controller('flows', function($scope, $rootScope, querySrv, dashboard, filterSrv) {
 
-    console.log('flows controller loaded');
+    // console.log('flows controller loaded');
 
     $scope.panelMeta = {
       editorTabs : [
@@ -127,6 +127,7 @@ define([
 		 var found = $scope.data.nodes.some(function (el) {
                     return el.name === node;
                   });
+		 // LEGEND: node: {position}, name: {name}
 		 if (!found)  $scope.data.nodes.push({ node: $scope.data.nodes.length, name: node });
 	}
 
@@ -171,15 +172,26 @@ define([
 	      // Find position
 	      var srcindex = $scope.data.nodes.map(function(e) { return e.name; }).indexOf(src),
 	      dstindex = $scope.data.nodes.map(function(e) { return e.name; }).indexOf(dst);
-	      // Push to array 
-	      $scope.data.links.push({ source: srcindex, target: dstindex, value: count });
+
+	      // if ($scope.data.links) {
+	      // 	var srctest = $scope.data.links.map(function(e) { return e.source; }).indexOf(dstindex);
+	      // }
+
+	      // Push to array w/ direction correction (by sankey design)
+	      if (srcindex === dstindex ) {
+		return;
+	      } else if (srcindex > dstindex) {
+	      	$scope.data.links.push({ source: dstindex, target: srcindex, value: count });
+	      } else {
+	      	$scope.data.links.push({ source: srcindex, target: dstindex, value: count });
+	      }
 	}
 
         request.doSearch().then(function (results) {
           $scope.data.connections = {};
           _.each(results.facets, function(v, name) {
             $scope.data.connections[name] = v.count;
-		linkIt(name,v.count);
+		if (v.count > 0) linkIt(name,v.count);
           });
 
           // console.log('Connections: ', $scope.data.connections);
@@ -245,28 +257,26 @@ define([
 
 
 	var data = { "nodes" : [
-	{"node":0,"name":"10.0.0.1"},
-	{"node":1,"name":"10.10.0.1"},
-	{"node":2,"name":"10.100.1.1"},
-	{"node":3,"name":"10.0.100.1"},
-	{"node":4,"name":"10.0.10.100"}
+	{"node":0,"name":"client A"},
+	{"node":1,"name":"client B"},
+	{"node":2,"name":"proxy"},
+	{"node":3,"name":"server X"},
+	{"node":4,"name":"server Y"}
 	],
 	"links" : [
 	{"source":0,"target":2,"value":2},
 	{"source":1,"target":2,"value":3},
-	{"source":1,"target":3,"value":2},
-	{"source":0,"target":4,"value":2},
+	{"source":1,"target":2,"value":1},
 	{"source":2,"target":3,"value":4},
-	{"source":2,"target":4,"value":8},
-	{"source":3,"target":4,"value":1}
+	{"source":2,"target":4,"value":1}
 	] };
 	  
-	var indata = {
+	var data = {
 	 "nodes" : scope.data.nodes,
 	 "links" : scope.data.links
 	}
 
-	console.log('COMPARE DATA:',data,indata);
+	// console.log('COMPARE DATA/INDATA:',data,indata);
 
           var flows = d3.sankey()
             .size([width, height])
