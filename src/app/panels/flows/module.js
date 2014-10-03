@@ -3,10 +3,10 @@
  */
 
 /** @scratch /panels/flows/0
- * == Flows diagram (QXIP)
+ * == Flows sankey diagram (QXIP)
  * Status: *Experimental*
  *
- * This panel generates a D3/sanjay flow between the src_ip and dst_ip fields.
+ * This panel displays D3/sankey flows between the selected source and destination fields.
  */
 
 define([
@@ -36,7 +36,7 @@ define([
         }
       ],
       status  : "Experimental",
-      description : "Displays a sanjay plot based on a source and a destination field."
+      description : "Displays D3/sankey flows between the selected source and destination fields."
     };
 
     $scope.dashboard = dashboard;
@@ -95,7 +95,6 @@ define([
         boolQuery = boolQuery.should(querySrv.toEjsObj(q));
       });
 
-
       request = $scope.ejs.Request().indices(dashboard.indices);
       request = request
         .facet($scope.ejs.TermsFacet('src_terms')
@@ -149,10 +148,6 @@ define([
 		findIt(v.term);
         });
 
-        // console.log("Src terms", $scope.data.src_terms);
-        // console.log("Dst terms", $scope.data.dst_terms);
-        // console.log("San Nodes", $scope.data.nodes);
-
         // build a new request to compute the connections between the nodes
         request = $scope.ejs.Request().indices(dashboard.indices);
         _.each($scope.data.src_terms, function(src) {
@@ -168,7 +163,6 @@ define([
 
           });
         });
-
 
 	// QXIP: build links for sankey 
         $scope.data.links = [];
@@ -243,9 +237,6 @@ define([
           elem.text('');
           scope.panelMeta.loading = false;
 
-          // console.log("Links", scope.data.links);
-          // console.log("Nodes", scope.data.nodes);
-
           var style = scope.dashboard.current.style;
 
           var margin = {top: 10, right: 1, bottom: 6, left: 1};
@@ -264,7 +255,8 @@ define([
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	/* 
-		// EXAMPLE DATA:
+		// FORMAT:
+		
 		var data = { "nodes" : [
 		{"node":0,"name":"client A"},
 		{"node":1,"name":"client B"},
@@ -284,8 +276,6 @@ define([
 	 "nodes" : scope.data.nodes,
 	 "links" : scope.data.links
 	}
-
-	// console.log('COMPARE DATA/INDATA:',data,indata);
 
           var flows = d3.sankey()
             .size([width, height])
@@ -348,14 +338,6 @@ define([
     		flows.relayout();
     		link.attr("d", path);
   	  } 
-       
-          function dragmove2(d) {
-            d3.select(this).attr("transform", "translate(" + d.x + "," + (d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))) + ")");
-            flows.relayout();
-            link.attr("d", path);
-          }
-  
-
 
         }
       }
