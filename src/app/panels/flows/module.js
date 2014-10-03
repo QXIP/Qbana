@@ -58,7 +58,8 @@ define([
       /** @scratch /panels/terms/3
        * tmode:: Facet mode: terms or terms_stats
        */
-      tmode       : 'terms',
+      tmode   : 'terms',
+      style   : { "font-size": '16pt'},
       /** @scratch /panels/flows/3
        * ==== Queries
        * queries object:: This object describes the queries to use on this panel.
@@ -309,7 +310,9 @@ define([
             .call(d3.behavior.drag()
               .origin(function(d) { return d; })
               .on("dragstart", function() { this.parentNode.appendChild(this); })
-              .on("drag", dragmove));
+              .on("drag", dragmove))
+		.on("mouseover", fade(0.2))
+		.on("mouseout", fade(1));
         
           node.append("rect")
               .attr("height", function(d) { return Math.max(1.0, d.dy); })
@@ -340,7 +343,23 @@ define([
 	        ) + ")");
     		flows.relayout();
     		link.attr("d", path);
-  	  } 
+  	  }
+ 
+	  // Returns an event handler for fading a given chord group.
+	  function fade(opacity) {
+	   return function(g, i) {
+	    var elements = svg.selectAll(".node");
+	    elements = elements.filter(function(d) { return d.name != data.nodes[i].name });
+	    elements.transition()
+	        .style("opacity", opacity);
+	
+			svg.selectAll(".link")
+	        .filter(function(d) { return d.source.name != data.nodes[i].name && d.target.name != data.nodes[i].name })
+	      .transition()
+	        .style("opacity", opacity);
+	   };
+	  }	
+	
 
         }
       }
