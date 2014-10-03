@@ -178,13 +178,19 @@ define([
 
 	      var srcindex = $scope.data.nodes.map(function(e) { return e.name; }).indexOf(src),
 	      dstindex = $scope.data.nodes.map(function(e) { return e.name; }).indexOf(dst);
-
+	      var pair = "_"+srcindex+'_'+dstindex;
+	      var exists = $scope.data.links.map(function(e) { return "_"+e.source+"_"+e.target; }).indexOf(pair);
 	      // Push to array w/ direction correction (by sankey design)
 	      if (srcindex === dstindex ) {
 		return;
+	      } else if (exists >= 0) {
+		// sum to existing pair
+	      	$scope.data.links[exists].value += count;
 	      } else if (srcindex > dstindex) {
+		// insert swapped pair
 	      	$scope.data.links.push({ source: dstindex, target: srcindex, value: count });
 	      } else {
+		// insert straight pair
 	      	$scope.data.links.push({ source: srcindex, target: dstindex, value: count });
 	      }
 	}
@@ -284,7 +290,7 @@ define([
           var flows = d3.sankey()
             .size([width, height])
             .nodeWidth(15)
-            .nodePadding(20)
+            .nodePadding(15)
 	    .nodes(data.nodes)
 	    .links(data.links)
 	    .layout(32);
@@ -330,8 +336,20 @@ define([
             .filter(function(d) { return d.x < width / 2; })
               .attr("x", 6 + flows.nodeWidth())
               .attr("text-anchor", "start");
-        
-          function dragmove(d) {
+
+	  function dragmove(d) {
+		d3.select(this).attr("transform", 
+	        "translate(" + (
+	            d.x = Math.max(0, Math.min(width - d.dx, d3.event.x))
+	        )
+	        + "," + (
+	            d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
+	        ) + ")");
+    		flows.relayout();
+    		link.attr("d", path);
+  	  } 
+       
+          function dragmove2(d) {
             d3.select(this).attr("transform", "translate(" + d.x + "," + (d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))) + ")");
             flows.relayout();
             link.attr("d", path);
