@@ -172,8 +172,11 @@ define([
 
 	      var srcindex = $scope.data.nodes.map(function(e) { return e.name; }).indexOf(src),
 	      dstindex = $scope.data.nodes.map(function(e) { return e.name; }).indexOf(dst);
+	      var exists = -1;
 	      var pair = "_"+srcindex+'_'+dstindex;
-	      var exists = $scope.data.links.map(function(e) { return "_"+e.source+"_"+e.target; }).indexOf(pair);
+	      if ($scope.data.links) {
+		      exists = $scope.data.links.map(function(e) { return "_"+e.source+"_"+e.target; }).indexOf(pair);
+	      }
 	      // Push to array w/ direction correction (by sankey design)
 	      if (srcindex === dstindex ) {
 		return;
