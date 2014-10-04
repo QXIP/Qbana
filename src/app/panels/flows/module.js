@@ -18,6 +18,7 @@ define([
 ],
  function (angular, app, _, $, d3) {
   'use strict';
+
   var module = angular.module('kibana.panels.flows', []);
   app.useModule(module);
 
@@ -78,25 +79,42 @@ define([
       $scope.get_data();
     };
 
+    $scope.build_search = function(field, value, mand) {
+      filterSrv.set({type:'field', field:field, query:value, mandate:mand});
+    };
+
+    /**
+     * The time range effecting the panel
+     * @return {[type]} [description]
+     */
+    $scope.get_time_range = function () {
+      var range = $scope.range = filterSrv.timeRange('last');
+      return range;
+    };
+
     $scope.get_data = function() {
 
+      // Make sure we have everything for the request to complete
+      if(dashboard.indices.length === 0) {
+        return;
+      }
       $scope.panelMeta.loading = true;
 
       var request,
         boolQuery,
         queries;
-      var ejs = $scope.ejs;
 
       $scope.panel.queries.ids = querySrv.idsByMode($scope.panel.queries);
-
-
+      request = $scope.ejs.Request().indices(dashboard.indices);
       queries = querySrv.getQueryObjs($scope.panel.queries.ids);
+
+      var ejs = $scope.ejs;
+
       boolQuery = $scope.ejs.BoolQuery();
       _.each(queries,function(q) {
-        boolQuery = boolQuery.should(querySrv.toEjsObj(q));
+        boolQuery = boolQuery.should(querySrv.toEjsObj(q) );
       });
 
-      request = $scope.ejs.Request().indices(dashboard.indices);
       request = request
         .facet($scope.ejs.TermsFacet('src_terms')
           .field($scope.panel.src_field)
@@ -105,7 +123,7 @@ define([
           .facetFilter($scope.ejs.QueryFilter(
             $scope.ejs.FilteredQuery(
               boolQuery,
-              filterSrv.getBoolFilter(filterSrv.ids)
+              filterSrv.getBoolFilter(filterSrv.ids()).must($scope.ejs.ExistsFilter($scope.panel.src_field))
             )
           ))
         )
@@ -116,7 +134,7 @@ define([
           .facetFilter($scope.ejs.QueryFilter(
             $scope.ejs.FilteredQuery(
               boolQuery,
-              filterSrv.getBoolFilter(filterSrv.ids)
+              filterSrv.getBoolFilter(filterSrv.ids()).must($scope.ejs.ExistsFilter($scope.panel.dst_field))
             )
           ))
         )
@@ -297,6 +315,7 @@ define([
               .attr("class", "link")
               .attr("d", path)
               .style("stroke-width", function(d) { return Math.max(1, d.dy); })
+		.on("click",function(d){ scope.build_search(scope.panel.src_field,d.source.name,"either");scope.build_search(scope.panel.dst_field,d.target.name,"either");  })
               .sort(function(a, b) { return b.dy - a.dy; });
         
           link.append("title")
@@ -311,6 +330,7 @@ define([
               .origin(function(d) { return d; })
               .on("dragstart", function() { this.parentNode.appendChild(this); })
               .on("drag", dragmove))
+		.on("click",function(d){ scope.build_search(scope.panel.src_field,d.name,"either");scope.build_search(scope.panel.dst_field,d.name,"either"); })
 		.on("mouseover", fade(0.2))
 		.on("mouseout", fade(1));
         
@@ -341,8 +361,8 @@ define([
 	        + "," + (
 	            d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
 	        ) + ")");
-    		flows.relayout();
     		link.attr("d", path);
+    		flows.relayout();
   	  }
  
 	  // Returns an event handler for fading a given chord group.
