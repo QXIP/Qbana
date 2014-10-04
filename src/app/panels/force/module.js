@@ -74,9 +74,18 @@ define([
       $scope.get_data();
     };
 
+    $scope.build_search = function(field, value, mand) {
+      if (!mand) var mand = "must";
+      filterSrv.set({type:'field', field:field, query:value, mandate:mand});
+    };
+
     $scope.get_data = function() {
       console.log('force scope get_data');
 
+    // Make sure we have everything for the request to complete
+      if(dashboard.indices.length === 0) {
+        return;
+      }
       $scope.panelMeta.loading = true;
 
       var request,
@@ -101,7 +110,7 @@ define([
           .facetFilter($scope.ejs.QueryFilter(
             $scope.ejs.FilteredQuery(
               boolQuery,
-              filterSrv.getBoolFilter(filterSrv.ids)
+              filterSrv.getBoolFilter(filterSrv.ids()).must($scope.ejs.ExistsFilter($scope.panel.src_field))
             )
           ))
         )
@@ -111,7 +120,7 @@ define([
           .facetFilter($scope.ejs.QueryFilter(
             $scope.ejs.FilteredQuery(
               boolQuery,
-              filterSrv.getBoolFilter(filterSrv.ids)
+              filterSrv.getBoolFilter(filterSrv.ids()).must($scope.ejs.ExistsFilter($scope.panel.dst_field))
             )
           ))
         )
@@ -301,6 +310,7 @@ define([
           node.append("circle")
               .attr("r", 25)
               .style('fill', '#2980b9')
+	      .on("click",function(d){ scope.build_search(scope.panel.src_field,d.name,"either");scope.build_search(scope.panel.dst_field,d.name,"either");  })
               .on('mouseover', function(d) {
                 console.log('Node: ', d);
                 d3.select(this).style('fill', '#7ab6b6');
@@ -321,6 +331,7 @@ define([
               .attr("x", 27)
               .attr("dy", ".5em")
               .style('fill', style === 'light' ? '#222' : '#eee')
+	      .on("click",function(d){ scope.build_search(scope.panel.src_field,d.name,"either");scope.build_search(scope.panel.dst_field,d.name,"either");  })
               .text(function(d) { return d.name; });
 
         }
