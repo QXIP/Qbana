@@ -195,7 +195,7 @@ function (angular, app, _, $, kbn) {
 
 	// Determine is query uses single or multi valuefield
 	if($scope.panel.valuefield instanceof Array) {
-		console.log('Terms Value is array: ',$scope.panel.valuefield);
+		// console.log('Terms Value is array: ',$scope.panel.valuefield);
 		// Adjust size to number of parameters
 		var gsize = (parseInt($scope.panel.size/$scope.panel.valuefield.length) > 2) ? parseInt($scope.panel.size/$scope.panel.valuefield.length) : $scope.panel.size;
 		// QXIP: Dynamic Properties
@@ -218,7 +218,7 @@ function (angular, app, _, $, kbn) {
 		request = request.size(0);
 
 	} else {
-		console.log('Terms Value is single: ',$scope.panel.valuefield);
+		// console.log('Terms Value is single: ',$scope.panel.valuefield);
 		// KIBANA: Original Properties
 	        request = request
 	          .facet($scope.ejs.TermStatsFacet('terms')
