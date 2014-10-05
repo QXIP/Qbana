@@ -125,7 +125,8 @@ function (angular, app, _, $, kbn) {
       /** @scratch /panels/terms/5
        * valuefield:: Terms_stats facet value field
        */
-      valuefield  : ''
+      // valuefield  : ''
+      valuefield  : []
     };
 
     _.defaults($scope.panel,_d);
@@ -181,17 +182,48 @@ function (angular, app, _, $, kbn) {
             )))).size(0);
       }
       if($scope.panel.tmode === 'terms_stats') {
-        request = request
-          .facet($scope.ejs.TermStatsFacet('terms')
-          .valueField($scope.panel.valuefield)
-          .keyField($scope.field)
-          .size($scope.panel.size)
-          .order($scope.panel.order)
-          .facetFilter($scope.ejs.QueryFilter(
-            $scope.ejs.FilteredQuery(
-              boolQuery,
-              filterSrv.getBoolFilter(filterSrv.ids())
-            )))).size(0);
+
+	
+	// Keep it simple for single values, convert to string
+	if ($scope.panel.valuefield instanceof Array && $scope.panel.valuefield.length === 1) { 
+		$scope.panel.valuefield.join();
+	}	
+
+	// Determine is query uses single or multi valuefield
+	if($scope.panel.valuefield instanceof Array) {
+		console.log('Terms Value is array: ',$scope.panel.valuefield);
+		// QXIP: Dynamic Properties
+		_.each($scope.panel.valuefield,function(q) {
+			request = request
+	         	 .facet($scope.ejs.TermStatsFacet(q)
+	         	 .valueField(q)
+	         	 .keyField($scope.field)
+	         	 .size($scope.panel.size)
+	         	 .order($scope.panel.order)
+			.facetFilter($scope.ejs.QueryFilter(
+	            	$scope.ejs.FilteredQuery(
+	            	  boolQuery,
+	            	  filterSrv.getBoolFilter(filterSrv.ids())
+	            	))))
+		});
+		request = request.size(0);
+
+	} else {
+		console.log('Terms Value is single: ',$scope.panel.valuefield);
+		// KIBANA: Original Properties
+	        request = request
+	          .facet($scope.ejs.TermStatsFacet('terms')
+	          .valueField($scope.panel.valuefield)
+	          .keyField($scope.field)
+	          .size($scope.panel.size)
+	          .order($scope.panel.order)
+	          .facetFilter($scope.ejs.QueryFilter(
+	            $scope.ejs.FilteredQuery(
+	              boolQuery,
+	              filterSrv.getBoolFilter(filterSrv.ids())
+	            )))).size(0);
+	}
+
       }
 
       // Populate the inspector panel
@@ -269,20 +301,25 @@ function (angular, app, _, $, kbn) {
         function build_results() {
           var k = 0;
           scope.data = [];
-          _.each(scope.results.facets.terms.terms, function(v) {
-            var slice;
-            if(scope.panel.tmode === 'terms') {
-              slice = { label : v.term, data : [[k,v.count]], actions: true};
-            }
-            if(scope.panel.tmode === 'terms_stats') {
-              slice = { label : v.term, data : [[k,v[scope.panel.tstat]]], actions: true};
-            }
-            scope.data.push(slice);
-            k = k + 1;
+	  _.each(scope.results.facets, function(f) {
+          // _.each(scope.results.facets.terms.terms, function(v) {
+		_.each(f.terms, function(v) {
+	            var slice;
+	            if(scope.panel.tmode === 'terms') {
+	              slice = { label : v.term, data : [[k,v.count]], actions: true};
+	            }
+	            if(scope.panel.tmode === 'terms_stats') {
+	              slice = { label : v.term, data : [[k,v[scope.panel.tstat]]], actions: true};
+	            }
+	            scope.data.push(slice);
+	            k = k + 1;
+	          });
+
+     	     scope.data.push({label:'Missing field',
+     	       data:[[k,f.missing]],meta:"missing",color:'#aaa',opacity:0});
+
           });
 
-          scope.data.push({label:'Missing field',
-            data:[[k,scope.results.facets.terms.missing]],meta:"missing",color:'#aaa',opacity:0});
 
           if(scope.panel.tmode === 'terms') {
             scope.data.push({label:'Other values',
