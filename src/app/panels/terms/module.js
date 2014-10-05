@@ -197,7 +197,11 @@ function (angular, app, _, $, kbn) {
 	if($scope.panel.valuefield instanceof Array) {
 		// console.log('Terms Value is array: ',$scope.panel.valuefield);
 		// Adjust size to number of parameters
+		if ($scope.panel.tsums) {
+		var gsize = (parseInt($scope.panel.size/$scope.panel.valuefield.length)/2 > 2) ? parseInt($scope.panel.size/$scope.panel.valuefield.length)/2 : $scope.panel.size/2;
+		} else {
 		var gsize = (parseInt($scope.panel.size/$scope.panel.valuefield.length) > 2) ? parseInt($scope.panel.size/$scope.panel.valuefield.length) : $scope.panel.size;
+		}
 		// QXIP: Dynamic Properties
 		_.each($scope.panel.valuefield,function(q) {
 			request = request
