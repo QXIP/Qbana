@@ -192,6 +192,8 @@ function (angular, app, _, $, kbn) {
 	// Determine is query uses single or multi valuefield
 	if($scope.panel.valuefield instanceof Array) {
 		console.log('Terms Value is array: ',$scope.panel.valuefield);
+		// Adjust size to number of parameters
+		$scope.panel.size = parseInt($scope.panel.size/$scope.panel.valuefield.length);
 		// QXIP: Dynamic Properties
 		_.each($scope.panel.valuefield,function(q) {
 			request = request
@@ -300,20 +302,23 @@ function (angular, app, _, $, kbn) {
 
         function build_results() {
           var k = 0;
+	  var g = 0;
           scope.data = [];
 	  _.each(scope.results.facets, function(f) {
-          // _.each(scope.results.facets.terms.terms, function(v) {
 		_.each(f.terms, function(v) {
 	            var slice;
 	            if(scope.panel.tmode === 'terms') {
 	              slice = { label : v.term, data : [[k,v.count]], actions: true};
 	            }
 	            if(scope.panel.tmode === 'terms_stats') {
-	              slice = { label : v.term, data : [[k,v[scope.panel.tstat]]], actions: true};
+	              slice = { label : v.term+'/'+scope.panel.valuefield[g], data : [[k,v[scope.panel.tstat]]], actions: true};
 	            }
 	            scope.data.push(slice);
 	            k = k + 1;
 	          });
+
+	     // next facet group
+	     g = g + 1;
 
      	     scope.data.push({label:'Missing field',
      	       data:[[k,f.missing]],meta:"missing",color:'#aaa',opacity:0});
