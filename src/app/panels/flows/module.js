@@ -51,7 +51,7 @@ define([
       /** @scratch /panels/flows/3
        * size:: Max number of nodes to draw
        */
-      size    : 50,
+      size    : 20,
       /** @scratch /panels/flows/3
        * exclude:: terms to exclude from the results
        */
