@@ -119,6 +119,10 @@ function (angular, app, _, $, kbn) {
        */
       tmode       : 'terms',
       /** @scratch /panels/terms/5
+       * tsums:: Facet mode: sum values or keep separate
+       */
+      tsums       : false,
+      /** @scratch /panels/terms/5
        * tstat:: Terms_stats facet stats field
        */
       tstat       : 'total',
@@ -193,14 +197,17 @@ function (angular, app, _, $, kbn) {
 	if($scope.panel.valuefield instanceof Array) {
 		console.log('Terms Value is array: ',$scope.panel.valuefield);
 		// Adjust size to number of parameters
-		$scope.panel.size = parseInt($scope.panel.size/$scope.panel.valuefield.length);
+		var gsize = (parseInt($scope.panel.size/$scope.panel.valuefield.length) > 2) ? parseInt($scope.panel.size/$scope.panel.valuefield.length) : $scope.panel.size;
 		// QXIP: Dynamic Properties
 		_.each($scope.panel.valuefield,function(q) {
 			request = request
 	         	 .facet($scope.ejs.TermStatsFacet(q)
 	         	 .valueField(q)
+			 // QXIP: Test using scripts
+			 // .valueScript("doc[\""+q+"\"].value")
+		         //	.facet($scope.ejs.facetScript('script').valueScript("doc[\""+q+"\"].value"))
 	         	 .keyField($scope.field)
-	         	 .size($scope.panel.size)
+	         	 .size(gsize)
 	         	 .order($scope.panel.order)
 			.facetFilter($scope.ejs.QueryFilter(
 	            	$scope.ejs.FilteredQuery(
@@ -311,9 +318,38 @@ function (angular, app, _, $, kbn) {
 	              slice = { label : v.term, data : [[k,v.count]], actions: true};
 	            }
 	            if(scope.panel.tmode === 'terms_stats') {
-	              slice = { label : v.term+'/'+scope.panel.valuefield[g], data : [[k,v[scope.panel.tstat]]], actions: true};
+			    if (scope.panel.tsums) {
+		              slice = { label : v.term, data : [[k,v[scope.panel.tstat]]], actions: true};
+			    } else {
+		              slice = { label : v.term+'/'+scope.panel.valuefield[g], data : [[k,v[scope.panel.tstat]]], actions: true};
+			    }
 	            }
-	            scope.data.push(slice);
+
+		    if (scope.panel.tsums) {
+		    	// sum twins
+		    	var exists = -1;
+		    	  if (scope.data) {
+				      exists = scope.data.map(function(e) { return e.label; }).indexOf(v.term);
+			      }
+		
+			    if (exists >= 0) {
+				// sum to existing pair
+				scope.data[exists].data[0][1] += slice.data[0][1]; 		
+				/*
+				 for (var attrname in scope.data[exists].data[0]) { 
+					 console.log('xxx ',scope.data[exists].data[0][attrname],slice.data[0][attrname]); 
+					 scope.data[exists].data[0][attrname] += slice.data[0][attrname]; 
+				 }
+				*/
+			    } else {
+				// insert new value
+		        	scope.data.push(slice);
+			      }
+		    } else { 
+				scope.data.push(slice); 
+		    }
+
+
 	            k = k + 1;
 	          });
 

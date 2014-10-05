@@ -15,7 +15,10 @@
       </div>
       <div class="editor-option" ng-show="panel.tmode == 'terms_stats'">
         <label class="small">Value field <tip>Supports comma separated values</tip></label>
-        <input array-join type="text" class="input-small" bs-typeahead="fields.list" ng-model="panel.valuefield" ng-change="set_refresh(true)">
+        <input array-join type="text" class="input-medium" bs-typeahead="fields.list" ng-model="panel.valuefield" ng-change="set_refresh(true)">
+      </div>
+      <div class="editor-option" ng-show="panel.tmode == 'terms_stats'">
+        <label class="small">Value Sum</label><input type="checkbox" ng-model="panel.tsums" ng-checked="panel.tsums">
       </div>
       <div class="editor-option">
         <label class="small">Length</label>
