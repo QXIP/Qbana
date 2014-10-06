@@ -1,0 +1,27 @@
+<div ng-controller='dashboard_dropdown' ng-init="init()">
+  <style>
+  .dashboard-drop-down {
+    padding-top: 10px;
+    margin: 2px;
+  }
+  .dashboard-drop-down .dash-label {
+    vertical-align: middle;
+    position: relative;
+    top: -5px;
+    margin-right: 5px;
+  }
+  .dash-color-dark {
+    color: #adafae;
+  }
+  .dash-color-light {
+    color: #fff;
+  }
+  </style>
+  <div class="dashboard-drop-down">
+    <span class="dash-label dash-color-{{dashboard.current.style}}">{{panel.label}}</span>
+    <select id="dashboard_dropdown" ng-model="selectedDashboard"
+      ng-options="dash for dash in panel.dashboards"
+      ng-change="selectAction()">
+    </select>
+  </div>
+</div>

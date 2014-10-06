@@ -1,0 +1,35 @@
+<div class="editor-row">
+  <div class="section">
+    <h5>Fields</h5>
+      <div class="editor-option">
+        <form>
+          <h6>Response time field <tip>Field containing the response time information</tip></h6>
+          <input bs-typeahead="fields.list" type="text" class="input-small" ng-model="panel.responsetime_field" ng-change="set_refresh(true)">
+        </form>
+      </div>
+
+      <div class="editor-option">
+        <form>
+          <h6>Timestamp field <tip>Field containing the timestamp information</tip></h6>
+          <input bs-typeahead="fields.list" type="text" class="input-small" ng-model="panel.timestamp_field" ng-change="set_refresh(true)">
+        </form>
+      </div>
+  </div>
+
+  <div class="section">
+    <h5>Axes</h5>
+    <div class="editor-option">
+    <form>
+      <h6>Number of buckets <tip>In how many buckets to split the Y axis</tip></h6>
+      <input bs-typeahead="fields.list" type="text" class="input-small" ng-model="panel.nbuckets" ng-change="set_refresh(true)">
+    </form>
+    </div>
+
+    <div class="editor-option">
+    <form>
+      <h6>Number of time intervals <tip>In how many time intervals to split the X axis</tip></h6>
+      <input bs-typeahead="fields.list" type="text" class="input-small" ng-model="panel.nintervals" ng-change="set_refresh(true)">
+    </form>
+    </div>
+  </div>
+</div>

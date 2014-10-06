@@ -30,13 +30,14 @@ function (angular, _, config) {
       } else {
         var nodeInfo = ejs.client.get('/_nodes',
           undefined, undefined, function(data, status) {
-          if(status === 0) {
-            alertSrv.set('Error',"Could not contact Elasticsearch at "+ejs.config.server+
+          if(_.isUndefined(status)) {
+            alertSrv.set('Error',"Could not contact Elasticsearch at "+ejs.client.server()+
               ". Please ensure that Elasticsearch is reachable from your system." ,'error');
           } else {
-            alertSrv.set('Error',"Could not reach "+ejs.config.server+"/_nodes. If you"+
+            alertSrv.set('Error',"Could not reach "+ejs.client.server()+"/_nodes. If you"+
             " are using a proxy, ensure it is configured correctly",'error');
           }
+          return;
         });
 
         return nodeInfo.then(function(p) {
@@ -144,6 +145,14 @@ function (angular, _, config) {
 
     // Determine if a specific version is greater than or equal to another
     this.compare = function (required,installed) {
+      if(_.isUndefined(installed)) {
+        return;
+      }
+
+      if(!required || !installed) {
+        return undefined;
+      }
+
       var a = installed.split('.');
       var b = required.split('.');
       var i;
