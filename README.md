@@ -5,10 +5,8 @@ intended as a possible alternative to Kibana 3-4 and for users willing to use < 
 
 ## Overview
 
-Qbana is an open source (Apache Licensed), browser based analytics and search interface to Logstash
-and other timestamped data sets stored in ElasticSearch. With those in place Qbana is a snap to
-setup and start using (seriously). Qbana strives to be easy to get started with, while also being
-flexible and powerful
+Qbana is an open source (Apache Licensed), browser based analytics and search interface to nProbe,
+Logstash and other timestamped data sets stored in ElasticSearch. 
 
 ### Requirements
 * Elasticsearch 0.90.9 or above
