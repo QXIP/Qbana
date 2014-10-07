@@ -38,9 +38,9 @@
           ],
           "type": "text",
           "mode": "markdown",
-          "content": "![qbana](img/qbana.png)  \n\n##### Did you just upgrade? Not expecting this screen?\nIf you were using the old default page you might not be expecting this screen. I understand, change can be awkward. Let me explain. \n\n##### Setting a global default dashboard\nQbana has always shipped with an interface for Logstash, still does! You can access it [here](index.html#dashboard/file/logstash.json). However, if you want to make it your default again, all you need to do is rename a file!\nIn your Qbana installation directory: \n\nRename *logstash.json* to *default.json* and refresh. Should be all set.\n\n##### But wait, there's more!\nIn fact, you can add any exported dashboard to that directory and access it as *http://YOUR-HOST -HERE/index.html#dashboard/file/YOUR-DASHBOARD.json*. Neat trick eh?",
+          "content": "![qbana](img/qb.png) \n\n\n##### Setting a global default dashboard\nQbana ships with support for [nProbe](index.html#dashboard/file/nprobe.json) and [Logstash](index.html#dashboard/file/logstash.json). \n\nTo set a default, just rename it to *default.json*\n\n##### But wait, there's more!\nIn fact, you can add any exported dashboard to that directory and access it as *http://YOUR-HOST -HERE/index.html#dashboard/file/YOUR-DASHBOARD.json*. Neat trick eh?",
           "style": {},
-          "title": "",
+          "title": "Dashboards",
           "status": "Stable"
         },
         {
@@ -52,8 +52,9 @@
           ],
           "type": "text",
           "mode": "markdown",
-          "content": "### Welcome to Qbana. \nGlad you could make it. Happy to have you here! Lets get started, shall we?\n##### Requirements\n* **A good browser.**  \n    The latest version of Chrome or Firefox is recommended. Safari (latest version) and Internet Explorer 9 and above are also supported.\n* **A webserver.**  \n    Just somewhere to host the HTML and Javascript. Basically any webserver will work.\n* **Elasticsearch**  \n   0.90.9 or above. \n\n##### Configuration\nIf Qbana and Elasticsearch are on the same host, and you're using the default Elasticsearch port, then you're all set. Qbana is configured to use that setup by default!  \n\nIf not, you need to edit *config.js* and set the *elasticsearch* parameter with the URL (including port, probably 9200) of your Elasticsearch server. The host part should be the entire, fully qualified domain name, or IP, **not localhost**.\n#### Are you a Logstash User?\n+ **YES** - Great! We have a prebuilt dashboard: [(Logstash Dashboard)](index.html#/dashboard/file/logstash.json). See the note to the right about making it your global default  \n\n+ **NO** - Hey, no problem, you just have a bit of setup to do. You have a few choices:  \n\n    1. [Sample Dashboard](index.html#/dashboard/file/guided.json) *I don't have much data yet, please extract some basics for me*  \n    2. [Unconfigured Dashboard](index.html#/dashboard/file/noted.json) *I have a lot of data and I don't want Qbana to query it at once*\n    3. [Blank Dashboard](index.html#/dashboard/file/blank.json) *I'm comfortable figuring it out on my own*",
+          "content": "![qbana](img/qb.png) \n\n\n### Welcome to Qbana. \n\n##### Requirements\n* **A good browser.**  \n    The latest version of Chrome or Firefox is recommended. Safari (latest version) and Internet Explorer 9 and above are also supported.\n* **A webserver.**  \n    Just somewhere to host the HTML and Javascript. Basically any webserver will work.\n* **Elasticsearch**  \n   0.90.9 or above. \n\n##### Configuration\nIf Qbana and Elasticsearch are on the same host, and you're using the default Elasticsearch port, then you're all set.\n\nIf not, you will need to edit *config.js* and set the *elasticsearch* parameter with the URL (or IP:PORT) of your Elasticsearch server. \n#### Are you an nProbe User?\n+ **YES** - Great! We have a prebuilt [nProbe Dashboard](index.html#/dashboard/file/nprobe.json) and more for each plugin. See the note to the right about making it your global default  \n\n+ **NO** - Hey, no problem, you just have a bit of setup to do. You have a few choices:  \n\n    1. [Logstash Dashboard](index.html#/dashboard/file/logstash.json) *I'm just here, doing the good same old log things* \n 2. [Sample Dashboard](index.html#/dashboard/file/guided.json) *I don't have much data yet, please extract some basics for me*  \n    3. [Unconfigured Dashboard](index.html#/dashboard/file/noted.json) *I have a lot of data and I don't want Qbana to query it at once*\n    4. [Blank Dashboard](index.html#/dashboard/file/blank.json) *I'm comfortable figuring it out on my own*",
           "style": {},
+	  "title": "Quick Start",
           "status": "Stable"
         }
       ],
@@ -67,7 +68,7 @@
     "default": "_all",
     "warm_fields": false
   },
-  "style": "dark",
+  "style": "light",
   "failover": false,
   "panel_hints": true,
   "pulldowns": [],
