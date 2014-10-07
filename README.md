@@ -15,6 +15,9 @@ work. IE9 and greater should work. IE8 does not.
 * A browser reachable Elasticsearch server. Port 9200 must be open, or a proxy configured to allow
 access to it.
 
+### Suggested
+* A reverse proxy to take care of security or a hosted solution which does for you
+
 ### Docs
 
 Documentation, panel options and tutorials can be found on the Wiki
