@@ -1,13 +1,13 @@
 {
   "author": {
-    "name": "Rashid Khan",
-    "company": "Elasticsearch BV"
+    "name": "QXIP",
+    "company": "QXIP BV"
   },
-  "name": "kibana",
+  "name": "qbana",
   "version": "3.1.0",
   "repository": {
     "type": "git",
-    "url": "http://github.com/elasticsearch/kibana.git"
+    "url": "http://github.com/QXIP/qbana.git"
   },
   "devDependencies": {
     "rjs-build-analysis": "0.0.3",
