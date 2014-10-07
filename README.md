@@ -1,6 +1,7 @@
 # Qbana
 
-Qbana is an indipendent Kibana 3 fork with several additional features and aggregations support.
+Qbana is an indipendent Kibana 3 fork with several additional features and aggregations support,
+intended as a possible alternative to Kibana 3-4 and for users willing to use < 1.4 ES "off-the-grid"
 
 ## Overview
 
