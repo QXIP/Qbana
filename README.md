@@ -40,17 +40,11 @@ to http://localhost:9200 unless your browser and elasticsearch are on the same m
 __Q__: How do I secure this? I don't want to leave 9200 open.  
 __A__: A simple nginx virtual host and proxy configuration can be found in the sample/nginx.conf
 
-__Q__: How to run the grunt build process.  
-__A__: Steps to follow 
-        a)Install node & npm 
-        b)npm install -g grunt-cli
-        c)npm install in Qbana folder
-        d)grunt build
-        
-        Useful links:
-        	https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
-        	https://npmjs.org/doc/install.html
-        	http://www.ghosthorses.co.uk/production-diary/installing-grunt-on-os-x-and-windows-7/
+
+__Q__: I'm running ES on a secured cluster with authentication. How do I configure this?  
+__A__: Use in your config.js: elasticsearch: {server: "https://your.elasticsearch.server:80", withCredentials: true},
+
+
 
 ### Support & Contributing
 
