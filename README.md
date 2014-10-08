@@ -53,6 +53,10 @@ __A__: Use in your config.js: elasticsearch: {server: "https://your.elasticsearc
 If you have questions or comments, bugfixes or new feature that you would like to contribute, **please find or open an issue about it first.** 
 
 
-Project sponsored by: 
+
+
+---
+
+This project sponsored by: 
 
 ![http://qxip.net](http://www.sipcapture.org/data/images/qxip.png) ![http://ntop.org](http://www.ntop.org/wp-content/uploads/2011/08/logo_new_m.png)
