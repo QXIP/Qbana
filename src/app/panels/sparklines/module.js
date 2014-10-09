@@ -318,10 +318,7 @@ function (angular, app, $, _, kbn, moment, timeSeries) {
         function render_panel() {
           // IE doesn't work without this
           // elem.css({height:"90px",width:"200px"});
-          elem.css({minHeight:"90px",height:"100%",width:"90%"});
-	   console.log('spark scope',scope);
-	   console.log('spark scope height',scope.panel.height);
-	   console.log('spark scope width',scope.panel.width);
+          elem.css({minHeight:"100px",height:"90%",minWidth:"200px", width:"90%"});
 	  // elem.css({height:scope.panel.height||scope.row.height,width:scope.panel.width||scope.row.width});
 
           // Populate element
