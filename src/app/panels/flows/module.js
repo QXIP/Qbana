@@ -83,6 +83,11 @@ define([
       filterSrv.set({type:'field', field:field, query:value, mandate:mand});
     };
 
+    $scope.build_qstring = function(value, mand) {
+      value = value.replace(/[^a-zA-Z0-9:*?.$]/g,' ');
+      filterSrv.set({type:'querystring', query:value, mandate:mand});
+    };
+
     /**
      * The time range effecting the panel
      * @return {[type]} [description]
@@ -325,12 +330,12 @@ define([
               .data(data.nodes)
             .enter().append("g")
               .attr("class", "node")
-              .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+              .attr("transform", function(d) { if (!d.x){d.x=0;} return "translate(" + d.x + "," + d.y + ")"; })
             .call(d3.behavior.drag()
               .origin(function(d) { return d; })
               .on("dragstart", function() { this.parentNode.appendChild(this); })
               .on("drag", dragmove))
-		.on("click",function(d){ scope.build_search(scope.panel.src_field,d.name,"either");scope.build_search(scope.panel.dst_field,d.name,"either"); })
+		.on("click",function(d){ scope.build_qstring(d.name,"must"); })
 		.on("mouseover", fade(0.2))
 		.on("mouseout", fade(1));
         
