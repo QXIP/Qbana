@@ -273,9 +273,9 @@ function (angular, app, $, _, kbn, moment, timeSeries) {
     };
 
     $scope.close_edit = function() {
-      if($scope.refresh) {
+      // if($scope.refresh) {
         $scope.get_data();
-      }
+      // }
       $scope.refresh =  false;
     };
 
@@ -296,6 +296,12 @@ function (angular, app, $, _, kbn, moment, timeSeries) {
           render_panel();
         });
 
+ 	// Or if the window is resized
+        angular.element(window).bind('resize', function(){
+          render_panel();
+        });
+
+
         var derivative = function(series) {
           return _.map(series, function(p,i) {
             var _v;
@@ -311,7 +317,12 @@ function (angular, app, $, _, kbn, moment, timeSeries) {
         // Function for rendering panel
         function render_panel() {
           // IE doesn't work without this
-          elem.css({height:"30px",width:"100px"});
+          // elem.css({height:"90px",width:"200px"});
+          elem.css({minHeight:"90px",height:"100%",width:"90%"});
+	   console.log('spark scope',scope);
+	   console.log('spark scope height',scope.panel.height);
+	   console.log('spark scope width',scope.panel.width);
+	  // elem.css({height:scope.panel.height||scope.row.height,width:scope.panel.width||scope.row.width});
 
           // Populate element
           //try {
