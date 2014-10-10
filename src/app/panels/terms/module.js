@@ -373,9 +373,10 @@ function (angular, app, _, $, kbn) {
 	     // next facet group
 	     g = g + 1;
 
-     	     scope.data.push({label:'Missing field',
-     	       data:[[k,f.missing]],meta:"missing",color:'#aaa',opacity:0});
-
+	      if (scope.panel.missing && f.missing > 0) {
+     	  	   scope.data.push({label:'Missing field',
+     	  	     data:[[k,f.missing]],meta:"missing",color:'#aaa',opacity:0});
+	      }
           });
 
 
