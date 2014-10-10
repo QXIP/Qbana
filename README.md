@@ -2,6 +2,8 @@
 Qbana is an indipendent Kibana 3 fork with several additional features and aggregations support,
 intended as a possible alternative to Kibana 3-4 and for users willing to use < 1.4 ES "off-the-grid"
 
+Qbana also ships with extra features and dashboards for [nProbe](http://ntop.org) and its plugins.
+
 ## Overview
 
 Qbana is an open source (Apache Licensed), browser based analytics and search interface to nProbe,
