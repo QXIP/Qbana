@@ -2,13 +2,12 @@
 Qbana is an indipendent Kibana 3 fork with several additional features and aggregations support,
 intended as a possible alternative to Kibana 3-4 and for users willing to use < 1.4 ES "off-the-grid"
 
-Qbana also ships with extra features and dashboards for [nProbe](http://ntop.org) and its plugins.
+Qbana ships preloaded with extra features and dashboards for [nProbe](http://www.ntop.org/products/nprobe/) and its plugins.
 
 ## Overview
 
 Qbana is an open source (Apache Licensed), browser based analytics and search interface to nProbe,
-Logstash and other timestamped data sets stored in ElasticSearch. Qbana comes preloaded with several
-dahboards tuned to nProbe and it's many plugins (ntop.org)
+Logstash and other timestamped data sets stored in ElasticSearch. 
 
 ### Requirements
 * Elasticsearch 0.90.9 or above
@@ -19,7 +18,7 @@ work. IE9 and greater should work. IE8 does not.
 access to it.
 
 ### Suggested
-* A reverse proxy to take care of security or a [hosted solution](http://facetflow.com) which does for you
+* A reverse proxy to take care of security or a [hosted solution](http://facetflow.com) which does it for you
 
 ### Docs
 
