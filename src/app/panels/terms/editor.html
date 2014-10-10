@@ -33,6 +33,10 @@
         <label class="small">Exclude Terms(s) (comma separated)</label>
         <input array-join type="text" ng-model='panel.exclude'></input>
       </div>
+      <div class="editor-option">
+        <label class="small">Terms mode</label>
+        <select class="input-small" ng-model="panel.dtype" ng-options="f for f in ['','bytes']" ng-change="set_refresh(true)"></select>
+      </div>
     </div>
   </div>
   <div class="editor-row">

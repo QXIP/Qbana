@@ -123,6 +123,10 @@ function (angular, app, _, $, kbn) {
        */
       tsums       : false,
       /** @scratch /panels/terms/5
+       * dtype:: Handle data as known type
+       */
+      dtype       : '',
+      /** @scratch /panels/terms/5
        * tstat:: Terms_stats facet stats field
        */
       tstat       : 'total',
@@ -138,10 +142,16 @@ function (angular, app, _, $, kbn) {
     $scope.init = function () {
       $scope.hits = 0;
 
-      $scope.$on('refresh',function(){
+    $scope.$on('refresh',function(){
         $scope.get_data();
       });
-      $scope.get_data();
+
+    $scope.getSize = function(size) {
+      var i = Math.floor( Math.log(size) / Math.log(1024) );
+      return ( size / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+    };
+
+    $scope.get_data();
 
     };
 
@@ -315,13 +325,25 @@ function (angular, app, _, $, kbn) {
 		_.each(f.terms, function(v) {
 	            var slice;
 	            if(scope.panel.tmode === 'terms') {
-	              slice = { label : v.term, data : [[k,v.count]], actions: true};
+		       if (scope.panel.dtype === 'bytes') {
+	                 slice = { label : v.term, data : [[k,v.count,scope.getSize(v.count)]], actions: true};
+		       } else {
+	                 slice = { label : v.term, data : [[k,v.count]], actions: true};
+		       }
 	            }
 	            if(scope.panel.tmode === 'terms_stats') {
 			    if (scope.panel.tsums) {
-		              slice = { label : v.term, data : [[k,v[scope.panel.tstat]]], actions: true};
+			       if (scope.panel.dtype === 'bytes') {
+		                 slice = { label : v.term, data : [[k,v[scope.panel.tstat],scope.getSize(v[scope.panel.tstat])]], actions: true};
+			       } else {
+		                 slice = { label : v.term, data : [[k,v[scope.panel.tstat]]], actions: true};
+			       }
 			    } else {
-		              slice = { label : v.term+'/'+scope.panel.valuefield[g], data : [[k,v[scope.panel.tstat]]], actions: true};
+			       if (scope.panel.dtype === 'bytes') {
+		                 slice = { label : v.term+'/'+scope.panel.valuefield[g], data : [[k,v[scope.panel.tstat],scope.getSize(v[scope.panel.tstat])]], actions: true};
+			       } else {
+		                 slice = { label : v.term+'/'+scope.panel.valuefield[g], data : [[k,v[scope.panel.tstat]]], actions: true};
+			       }
 			    }
 	            }
 
@@ -335,12 +357,7 @@ function (angular, app, _, $, kbn) {
 			    if (exists >= 0) {
 				// sum to existing pair
 				scope.data[exists].data[0][1] += slice.data[0][1]; 		
-				/*
-				 for (var attrname in scope.data[exists].data[0]) { 
-					 console.log('xxx ',scope.data[exists].data[0][attrname],slice.data[0][attrname]); 
-					 scope.data[exists].data[0][attrname] += slice.data[0][attrname]; 
-				 }
-				*/
+				scope.data[exists].data[0][2] = scope.getSize(scope.data[exists].data[0][1]); 		
 			    } else {
 				// insert new value
 		        	scope.data.push(slice);
