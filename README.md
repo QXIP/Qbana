@@ -19,7 +19,7 @@ work. IE9 and greater should work. IE8 does not.
 access to it.
 
 ### Suggested
-* A reverse proxy to take care of security or a hosted solution which does for you
+* A reverse proxy to take care of security or a [hosted solution](http://facetflow.com) which does for you
 
 ### Docs
 
@@ -46,7 +46,7 @@ __A__: A simple nginx virtual host and proxy configuration can be found in the s
 
 
 __Q__: I'm running ES on a secured cluster with authentication. How do I configure this?  
-__A__: Use in your config.js: elasticsearch: {server: "https://your.elasticsearch.server:80", withCredentials: true},
+__A__: Use in your config.js: **elasticsearch: {server: "https://your.elasticsearch.server:80", withCredentials: true},**
 
 
 
