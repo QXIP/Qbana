@@ -42,7 +42,7 @@ function (angular, app, _) {
                 $scope.panel.dashboards.push(dash._id);
               }
             });
-
+	    $scope.panel.dashboards.sort();
             $scope.selectedDashboard = dashboard.current.title;
           }
         });
