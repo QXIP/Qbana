@@ -18,7 +18,7 @@
   }
   </style>
   <div class="dashboard-drop-down">
-    <span class="dash-label dash-color-{{dashboard.current.style}}">{{panel.label}}</span>
+    <a id="dash_label_id"><span class="dash-label dash-color-{{dashboard.current.style}}">{{panel.label}}</span></a>
     <select id="dashboard_dropdown" ng-model="selectedDashboard"
       ng-options="dash for dash in panel.dashboards | orderBy:'name'"
       ng-change="selectAction()">

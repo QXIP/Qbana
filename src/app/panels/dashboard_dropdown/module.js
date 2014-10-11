@@ -27,7 +27,7 @@ function (angular, app, _) {
       /**
        * label:: The label to use in front of the dropdown.
        */
-      label: "Select Dashboard:"
+      label: "Dashboards:"
     };
     _.defaults($scope.panel,_d);
 
@@ -50,7 +50,9 @@ function (angular, app, _) {
 
     $scope.selectAction = function() {
       if ($scope.selectedDashboard !== dashboard.current.title) {
-        $window.location.href = "#/dashboard/elasticsearch/" + $scope.selectedDashboard;
+	  var alink = document.getElementById('dash_label_id');alink.href = "#/dashboard/elasticsearch/" + $scope.selectedDashboard;
+	  setTimeout(function(){ alink.click() }, 100);
+          // $window.location.href = "#/dashboard/elasticsearch/" + $scope.selectedDashboard;
       }
     };
 
