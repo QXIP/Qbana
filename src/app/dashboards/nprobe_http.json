@@ -254,8 +254,7 @@
           "loadingEditor": false,
           "field": "HTTP_RET_CODE",
           "exclude": [
-            "",
-            ""
+            "0"
           ],
           "missing": false,
           "other": false,
