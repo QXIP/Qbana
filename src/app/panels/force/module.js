@@ -21,11 +21,11 @@ define([
   var module = angular.module('kibana.panels.force', []);
   app.useModule(module);
 
-  console.log('force module loaded');
+  // console.log('force module loaded');
 
   module.controller('force', function($scope, $rootScope, querySrv, dashboard, filterSrv) {
 
-    console.log('force controller loaded');
+    // console.log('force controller loaded');
 
     $scope.panelMeta = {
       editorTabs : [
@@ -69,18 +69,41 @@ define([
     _.defaults($scope.panel,_d);
 
     $scope.init = function() {
-      console.log('force scope init');
+      // console.log('force scope init');
       $scope.$on('refresh',function(){$scope.get_data();});
       $scope.get_data();
     };
 
     $scope.build_search = function(field, value, mand) {
       if (!mand) var mand = "must";
-      filterSrv.set({type:'field', field:field, query:value, mandate:mand});
+      var exists = false;
+      console.log(filterSrv);
+       _.each(filterSrv.list(),function(q) {
+	console.log(q.mandate,mand,q.query,value,q.field,field);
+	if (q.mandate === mand && q.query === value && q.field === field) { found = true; }
+       });
+       if (!found) {
+	filterSrv.set({type:'field', field:field, query:value, mandate:mand});
+       } else { console.log('exists'); }
+    };
+
+    $scope.build_qstring = function(value, mand) {
+      value = value.replace(/[^a-zA-Z0-9:*?.$]/g,' ');
+      var found = false; var count = 0;
+       _.each(filterSrv.list(),function(q) {
+	if (q.query === value && q.mandate === mand) { found = count; }
+	count += 1;
+       });
+       if (!found) {
+	filterSrv.set({type:'querystring', query:value, mandate:mand});
+       } else { 
+	console.log('exists'); 
+	filterSrv.remove(found);
+       }
     };
 
     $scope.get_data = function() {
-      console.log('force scope get_data');
+      // console.log('force scope get_data');
 
     // Make sure we have everything for the request to complete
       if(dashboard.indices.length === 0) {
@@ -141,8 +164,8 @@ define([
           $scope.data.dst_terms.push(v.term);
         });
 
-        console.log("Src terms", $scope.data.src_terms);
-        console.log("Dst terms", $scope.data.dst_terms);
+        // console.log("Src terms", $scope.data.src_terms);
+        // console.log("Dst terms", $scope.data.dst_terms);
 
         // build a new request to compute the connections between the nodes
         request = $scope.ejs.Request().indices(dashboard.indices);
@@ -166,7 +189,7 @@ define([
             $scope.data.connections[name] = v.count;
           });
 
-          console.log('Connections: ', $scope.data.connections);
+          // console.log('Connections: ', $scope.data.connections);
 
           $scope.panelMeta.loading = false;
           $scope.$emit('render');
@@ -181,6 +204,14 @@ define([
       $scope.inspector = angular.toJson(JSON.parse(request.toString()),true);
     };
 
+    $scope.pickCol = function(str) {
+	    // str to hash
+	    for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
+	    // int/hash to hex
+	    for (var i = 0, colour = "#"; i < 3; colour += ("00" + ((hash >> i++ * 8) & 0xFF).toString(16)).slice(-2));
+	    return colour;
+    }
+
 
   });
 
@@ -188,7 +219,7 @@ define([
     return {
       restrict: 'A',
       link: function(scope, elem) {
-        console.log('link function called');
+        // console.log('link function called');
 
         elem.html('<center><img src="img/load_big.gif"></center>');
 
@@ -204,7 +235,7 @@ define([
         });
 
         function render_panel() {
-          console.log('force render event received');
+          // console.log('force render event received');
           elem.css({height:scope.panel.height||scope.row.height});
           elem.text('');
           scope.panelMeta.loading = false;
@@ -231,8 +262,8 @@ define([
             links.push(link);
           });
 
-          console.log("Links", links);
-          console.log("Nodes", d3.values(nodes));
+          // console.log("Links", links);
+          // console.log("Nodes", d3.values(nodes));
 
           // add the curvy lines
           function tick() {
@@ -310,9 +341,14 @@ define([
           node.append("circle")
               .attr("r", 25)
               .style('fill', '#2980b9')
-	      .on("click",function(d){ scope.build_search(scope.panel.src_field,d.name,"either");scope.build_search(scope.panel.dst_field,d.name,"either");  })
+              .style('fill', function(d){ return scope.pickCol(d.name); } )
+	      .on("click",function(d){ 
+			if (confirm('Switch filter for "'+d.name+'"?')) {
+			   scope.build_qstring(d.name,"either");  
+			}
+	       })
               .on('mouseover', function(d) {
-                console.log('Node: ', d);
+                // console.log('Node: ', d);
                 d3.select(this).style('fill', '#7ab6b6');
                 svg.selectAll('.link-path')
                   .filter(function(link) {
@@ -321,7 +357,7 @@ define([
                   .style('stroke', '#7ab6b6');
               })
               .on('mouseout', function() {
-                d3.select(this).style('fill', '#2980b9');
+                d3.select(this).style('fill', function(d){ return scope.pickCol(d.name); });
                 svg.selectAll('.link-path')
                   .style('stroke', '#8c8c8c');
               });
@@ -331,7 +367,7 @@ define([
               .attr("x", 27)
               .attr("dy", ".5em")
               .style('fill', style === 'light' ? '#222' : '#eee')
-	      .on("click",function(d){ scope.build_search(scope.panel.src_field,d.name,"either");scope.build_search(scope.panel.dst_field,d.name,"either");  })
+	      .on("click",function(d){ scope.build_qstring(d.name,"either");  })
               .text(function(d) { return d.name; });
 
         }
