@@ -260,6 +260,7 @@ define([
         });
 
         function render_panel() {
+          if (!scope.panel) { return; }	
           elem.css({height:scope.panel.height||scope.row.height});
           elem.text('');
           scope.panelMeta.loading = false;
