@@ -77,14 +77,14 @@ define([
     $scope.build_search = function(field, value, mand) {
       if (!mand) var mand = "must";
       var exists = false;
-      console.log(filterSrv);
        _.each(filterSrv.list(),function(q) {
-	console.log(q.mandate,mand,q.query,value,q.field,field);
 	if (q.mandate === mand && q.query === value && q.field === field) { found = true; }
        });
        if (!found) {
 	filterSrv.set({type:'field', field:field, query:value, mandate:mand});
-       } else { console.log('exists'); }
+       } else {
+	filterSrv.remove(found);
+       }
     };
 
     $scope.build_qstring = function(value, mand) {
@@ -97,13 +97,11 @@ define([
        if (!found) {
 	filterSrv.set({type:'querystring', query:value, mandate:mand});
        } else { 
-	console.log('exists'); 
 	filterSrv.remove(found);
        }
     };
 
     $scope.get_data = function() {
-      // console.log('force scope get_data');
 
     // Make sure we have everything for the request to complete
       if(dashboard.indices.length === 0) {
@@ -205,9 +203,7 @@ define([
     };
 
     $scope.pickCol = function(str) {
-	    // str to hash
 	    for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
-	    // int/hash to hex
 	    for (var i = 0, colour = "#"; i < 3; colour += ("00" + ((hash >> i++ * 8) & 0xFF).toString(16)).slice(-2));
 	    return colour;
     }
@@ -242,7 +238,7 @@ define([
 
           // compute the nodes and the links
           var links = [], nodes = {};
-          var max_value = 0;
+          var max_value = 0; 
           _.each(scope.data.connections, function(v, conn) {
             if (v === 0) {
               return;
@@ -264,6 +260,43 @@ define([
 
           // console.log("Links", links);
           // console.log("Nodes", d3.values(nodes));
+
+	  /*
+          function tick2() {
+            	path.attr("d", function(d) {
+	              var dx = d.target.x - d.source.x,
+	                dy = d.target.y - d.source.y,
+	                dr = Math.sqrt(dx * dx + dy * dy);
+	              return "M" +
+	                d.source.x + "," +
+	                d.source.y + "A" +
+	                dr + "," + dr + " 0 0,1 " +
+	                d.target.x + "," +
+	                d.target.y;
+  	        });
+
+		node.attr("transform", function(d) { 
+	         //center the center (root) node when graph is cooling down
+	         if(d.weight===d3.values(nodes).length-1){
+	            var damper = 0.1;
+	            d.x = d.x + (width/2 - d.x) * (damper + 0.71);
+	            d.y = d.y + (height/2 - d.y) * (damper + 0.71);
+	         }
+	         if(d.start === true){
+	            d.x = width/2;
+	            d.y = height/2;
+	            d.start = false;
+	         }
+	         var r = d.name.length;
+	         d.x = Math.max(r, Math.min(width - r, d.x));
+	         d.y = Math.max(r, Math.min(height - r, d.y));
+	
+	          return "translate("+d.x+","+d.y+")";            
+	
+	     }
+	    );
+	  }
+	  */
 
           // add the curvy lines
           function tick() {
@@ -293,9 +326,10 @@ define([
           var force = d3.layout.force()
             .nodes(d3.values(nodes))
             .links(links)
-            .size([width, height])
-            .linkDistance(150)
-            .charge(-1200)
+            .size([width, height-100])
+            .gravity(.05)
+            .linkDistance(70)
+            .charge(-2400)
             .on("tick", tick)
             .start();
 
@@ -306,7 +340,7 @@ define([
           // build the arrow.
           svg.append("svg:defs").selectAll("marker")
               .data(["end"])      // Different link/path types can be defined here
-            .enter().append("svg:marker")    // This section adds in the arrows
+            // .enter().append("svg:marker")    // This section adds in the arrows
               .attr("id", String)
               .attr("viewBox", "0 -5 10 10")
               .attr("refX", 15)
@@ -314,21 +348,26 @@ define([
               .attr("markerWidth", 6)
               .attr("markerHeight", 6)
               .attr("orient", "auto")
-              .style("fill", "#2980b9")
-            .append("svg:path")
-              .attr("d", "M0,-5L10,0L0,5");
+              .style("fill", "#2980b9");
+
+  //            .append("svg:path")
+  //            .attr("d", "M0,-5L10,0L0,5");
 
           // add the links and the arrows
           var path = svg.append("svg:g").selectAll("path")
               .data(force.links())
             .enter().append("svg:path")
               .attr("class", "link-path")
-              //.attr("marker-end", "url(#end)")
+              .attr("marker-end", "url(#end)")
               .style('fill', 'none')
               .style('stroke', '#8c8c8c')
               .style('stroke-width', function (link) {
                   return (0.5 + (link.value * 2) / max_value) + 'px';
                 });
+
+	  // drag behaviour
+	  var drag = force.drag()
+	    .on("dragstart", function(d){ d3.select(this).classed("fixed", d.fixed = true); } );
 
           // define the nodes
           var node = svg.selectAll(".node")
@@ -339,10 +378,9 @@ define([
 
           // add the nodes
           node.append("circle")
-              .attr("r", 25)
-              .style('fill', '#2980b9')
+              .attr("r", function(link){ return (5 + (link.weight * 1.5)); } )
               .style('fill', function(d){ return scope.pickCol(d.name); } )
-	      .on("click",function(d){ 
+	      .on("dblclick",function(d){ 
 			if (confirm('Switch filter for "'+d.name+'"?')) {
 			   scope.build_qstring(d.name,"either");  
 			}
@@ -364,10 +402,10 @@ define([
 
           // add the text
           node.append("text")
-              .attr("x", 27)
-              .attr("dy", ".5em")
+              .attr("x", function(d){ return (8 + (d.weight * 2) ); } )
+              .attr("dy", ".35em")
               .style('fill', style === 'light' ? '#222' : '#eee')
-	      .on("click",function(d){ scope.build_qstring(d.name,"either");  })
+              .style('font', function(d){ return "" + (8 + (d.weight * 0.5))+ "px arial, sans-serif"; } )
               .text(function(d) { return d.name; });
 
         }
