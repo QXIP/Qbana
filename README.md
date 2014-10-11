@@ -22,7 +22,7 @@ access to it.
 
 ### Docs
 
-Documentation, panel options and tutorials can be found on the Wiki
+Documentation, panel options and tutorials can be found on the [WiKi](https://github.com/QXIP/Qbana/wiki)
 ### Installation
 
 1. Download and extract a snapshot or clone this repository to your webserver.
