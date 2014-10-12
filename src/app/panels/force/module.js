@@ -327,8 +327,8 @@ define([
             .nodes(d3.values(nodes))
             .links(links)
             .size([width, height-100])
-            .gravity(.05)
-            .linkDistance(70)
+            .gravity(1)
+            .linkDistance(80)
             .charge(-2400)
             .on("tick", tick)
             .start();
