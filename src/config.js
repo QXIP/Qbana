@@ -76,6 +76,7 @@ function (Settings) {
       'terms',
       'stats',
       'sparklines',
+      'flare',
       'flows',
       'heatmap'
     ]
