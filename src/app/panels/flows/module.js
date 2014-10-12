@@ -79,15 +79,32 @@ define([
       $scope.get_data();
     };
 
-    $scope.build_search = function(field, value, mand) {
-      filterSrv.set({type:'field', field:field, query:value, mandate:mand});
+  $scope.build_search = function(field, value, mand) {
+      if (!mand) var mand = "must";
+      var exists = false;
+       _.each(filterSrv.list(),function(q) {
+	if (q.mandate === mand && q.query === value && q.field === field) { found = true; }
+       });
+       if (!found) {
+	filterSrv.set({type:'field', field:field, query:value, mandate:mand});
+       } else {
+	filterSrv.remove(found);
+       }
     };
 
     $scope.build_qstring = function(value, mand) {
       value = value.replace(/[^a-zA-Z0-9:*?.$]/g,' ');
-      filterSrv.set({type:'querystring', query:value, mandate:mand});
+      var found = false; var count = 0;
+       _.each(filterSrv.list(),function(q) {
+	if (q.query === value && q.mandate === mand) { found = count; }
+	count += 1;
+       });
+       if (!found) {
+	filterSrv.set({type:'querystring', query:value, mandate:mand});
+       } else { 
+	filterSrv.remove(found);
+       }
     };
-
     /**
      * The time range effecting the panel
      * @return {[type]} [description]
@@ -321,7 +338,11 @@ define([
               .attr("class", "link")
               .attr("d", path)
               .style("stroke-width", function(d) { return Math.max(1, d.dy); })
-		.on("click",function(d){ scope.build_search(scope.panel.src_field,d.source.name,"either");scope.build_search(scope.panel.dst_field,d.target.name,"either");  })
+		.on("dblclick",function(d){ 
+			if (confirm('Switch filter for "'+d.name+'"?')) {
+				scope.build_search(scope.panel.src_field,d.source.name,"either");scope.build_search(scope.panel.dst_field,d.target.name,"either"); 
+			}
+		})
               .sort(function(a, b) { return b.dy - a.dy; });
         
           link.append("title")
@@ -336,7 +357,11 @@ define([
               .origin(function(d) { return d; })
               .on("dragstart", function() { this.parentNode.appendChild(this); })
               .on("drag", dragmove))
-		.on("click",function(d){ scope.build_qstring(d.name,"must"); })
+		.on("dblclick",function(d){ 
+			if (confirm('Switch filter for "'+d.name+'"?')) {
+			   scope.build_qstring(d.name,"either");  
+			}
+	        })
 		.on("mouseover", fade(0.2))
 		.on("mouseout", fade(1));
         
