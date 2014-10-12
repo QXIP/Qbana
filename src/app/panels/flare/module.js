@@ -316,12 +316,12 @@ function (angular, app, _, $, kbn, d3) {
 
         // Receive render events
         scope.$on('render',function(){
-          render_panel();
+          render_flare();
         });
 
 	// Or if the window is resized
         angular.element(window).bind('resize', function(){
-          render_panel();
+          render_flare();
         });
 
 
@@ -369,9 +369,9 @@ function (angular, app, _, $, kbn, d3) {
 
         // Function for rendering panel
 	// start chart
-        function render_panel() {
+        function render_flare() {
 
-	  console.log('start render...');
+	  // console.log('start render...');
           var chartData;
 
           build_results();
