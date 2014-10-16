@@ -60,6 +60,7 @@ define([
        * tmode:: Facet mode: terms or terms_stats
        */
       tmode   : 'terms',
+      chart   : 'flows',
       style   : { "font-size": '16pt'},
       /** @scratch /panels/flows/3
        * ==== Queries
@@ -206,8 +207,10 @@ define([
         });
 
 	// QXIP: build links for sankey 
+	$scope.data.edges = [];
         $scope.data.links = [];
 	var linkIt = function(conn,count){
+	      // BUILD LINKS FOR FLOWS
 	      var src = conn.substring(0, conn.indexOf('->')),
               dst = conn.substring(conn.indexOf('->') + 2, conn.length);
 
@@ -233,11 +236,65 @@ define([
 	      }
 	}
 
+	var checkPush = function(node,i,count){
+		var check = $scope.data.edges[i].imports.map(function(e) {return e; }).indexOf(node);
+                if(check < 0) { 
+		  	$scope.data.edges[i].imports[$scope.data.edges[i].imports.length] = node;
+		  	$scope.data.edges[i].count += count;
+		}
+
+	}
+	var nodePush = function(node){
+		var check = $scope.data.edges.map(function(e) { return e.name; }).indexOf(node);
+                if(check < 0) { $scope.data.edges.push({ name: node, imports: [] }); }
+	}
+
+
+	var circleIt = function(conn,count){
+	      // BUILD LINKS FOR EDGES
+	      var src = conn.substring(0, conn.indexOf('->')),
+              dst = conn.substring(conn.indexOf('->') + 2, conn.length);
+
+	      var srcindex = $scope.data.nodes.map(function(e) { return e.name; }).indexOf(src),
+	      dstindex = $scope.data.nodes.map(function(e) { return e.name; }).indexOf(dst);
+	      var bexists = -1; var aexists = -1;
+	      if ($scope.data.edges) {
+		      aexists = $scope.data.edges.map(function(e) { return e.name; }).indexOf(src);
+		      bexists = $scope.data.edges.map(function(e) { return e.name; }).indexOf(dst);
+	      }
+		if(aexists < 0){
+			if(bexists < 0){
+		      		$scope.data.edges.push({ name: src, imports: [dst], count: count });
+				nodePush(dst);
+			} else {
+				checkPush(src,bexists,count);
+				nodePush(src);
+			}
+		} else {
+			if(bexists < 0){
+		      		$scope.data.edges.push({ name: dst, imports: [src], count: count });
+				nodePush(src);
+			} else {
+				checkPush(dst,aexists,count);
+				nodePush(dst);
+			}
+		}
+
+
+
+	}
+
         request.doSearch().then(function (results) {
           $scope.data.connections = {};
           _.each(results.facets, function(v, name) {
             $scope.data.connections[name] = v.count;
-		if (v.count > 0) linkIt(name,v.count);
+		if (v.count > 0 && name) { 
+			if ($scope.panel.chart === 'flows') { 
+				linkIt(name,v.count);
+			} else if ($scope.panel.chart === 'edges') { 
+				circleIt(name,v.count);
+			}
+		}
           });
 
           // console.log('Connections: ', $scope.data.connections);
@@ -282,12 +339,17 @@ define([
           elem.text('');
           scope.panelMeta.loading = false;
 
-          var style = scope.dashboard.current.style;
-
           var margin = {top: 10, right: 1, bottom: 6, left: 1};
           var width = $(elem[0]).width() - margin.left - margin.right;
           var height = $(elem[0]).height() - margin.top - margin.bottom;
+
+          var style = scope.dashboard.current.style;
           
+    // select panel style
+
+	if(scope.panel.chart ==='flows'){
+	// FLOWS Panel
+
           var formatNumber = d3.format(",.0f"),
               format = function(d) { return formatNumber(d) + " packets"; },
               color = d3.scale.category20();
@@ -384,7 +446,83 @@ define([
               .attr("x", 6 + flows.nodeWidth())
               .attr("text-anchor", "start");
 
-	  function dragmove(d) {
+
+	} else if(scope.panel.chart === 'edges') {
+
+	// EDGES Panel
+
+		var diameter = height,
+		    radius = diameter / 2,
+		    innerRadius = radius - 120,
+		    margin = ( $(elem[0]).width() - $(elem[0]).height() ) / 2;
+
+		var cluster = d3.layout.cluster()
+		    .size([360, innerRadius])
+		    .sort(null)
+		    .value(function(d) { return d.size; });
+		
+		var bundle = d3.layout.bundle();
+		
+		var line = d3.svg.line.radial()
+		    .interpolate("bundle")
+		    .tension(.85)
+		    .radius(function(d) { return d.y; })
+		    .angle(function(d) { return d.x / 180 * Math.PI; });
+
+		d3.select(elem[0]).select("svg").remove();
+		var svg = d3.select(elem[0]).append("svg")
+		    .attr("width", diameter)
+		    .attr("height", diameter)
+		  .append("g")
+		    .attr("transform", "translate(" + radius + "," + radius + ")");
+
+		d3.select(elem[0])
+	    		.attr("style", 'margin-left:'+(width-height)/2+'px');
+
+		var link = svg.append("g").selectAll(".link_e"),
+		    node = svg.append("g").selectAll(".node_e");
+
+		/*
+			// FORMAT
+			var mydata = [
+				{"name": "Manuel_Jose", "imports": ["vivant", "designer", "artista", "empreendedor"]},
+				{"name": "vivant", "imports": []},
+				{"name": "designer", "imports": ["vivant"]},
+				{"name": "artista", "imports": []},
+				{"name": "empreendedor", "imports": []}
+			];
+			*/
+
+		var newnodes = cluster.nodes(packageHierarchy(scope.data.edges));
+		var newlinks = packageImports(newnodes);
+
+		 link = link
+		      .data(bundle(newlinks))
+		    .enter().append("path")
+		      .each(function(d) { d.source = d[0], d.target = d[d.length - 1]; })
+		      .attr("class", "link_e")
+		      .attr("d", line);
+		
+		  node = node
+		      .data(newnodes.filter(function(n) { return !n.children; }))
+		    .enter().append("text")
+		      .attr("class", "node_e")
+		      .attr("dy", ".31em")
+		      .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? "" : "rotate(180)"); })
+		      .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+		      .text(function(d) { return d.key; })
+		      .on("mouseover", mouseovered)
+		      .on("mouseout", mouseouted);
+
+	//	d3.select(self.frameElement).style("height", diameter + "px");	
+
+
+	}
+      // END Select Panel style
+
+
+	// FLOWS FUNCTIONS
+	  var  dragmove = function(d) {
 		d3.select(this).attr("transform", 
 	        "translate(" + (
 	            d.x = Math.max(0, Math.min(width - d.dx, d3.event.x))
@@ -410,9 +548,83 @@ define([
 	        .style("opacity", opacity);
 	   };
 	  }	
+
+	// EDGES FUNCTIONS
+	function mouseovered(d) {
+	  node
+	      .each(function(n) { n.target = n.source = false; });
 	
+	  link
+	      .classed("link--target", function(l) { if (l.target === d) return l.source.source = true; })
+	      .classed("link--source", function(l) { if (l.source === d) return l.target.target = true; })
+	    .filter(function(l) { return l.target === d || l.source === d; })
+	      .each(function() { this.parentNode.appendChild(this); });
+	
+	  node
+	      .classed("node--target", function(n) { return n.target; })
+	      .classed("node--source", function(n) { return n.source; });
+	}
+	
+	function mouseouted(d) {
+	  link
+	      .classed("link--target", false)
+	      .classed("link--source", false);
+	
+	  node
+	      .classed("node--target", false)
+	      .classed("node--source", false);
+	}
+	
+	d3.select(self.frameElement).style("height", diameter + "px");
+	
+	// Lazily construct the package hierarchy from class names.
+	function packageHierarchy(classes) {
+	  var map = {};
+	
+	  function find(name, data) {
+	    var node = map[name], i;
+	    if (!node) {
+	      node = map[name] = data || {name: name, children: []};
+	      if (name.length) {
+	        node.parent = find(name.substring(0, i = name.lastIndexOf(" ")));
+	        node.parent.children.push(node);
+	        node.key = name.substring(i + 1);
+	      }
+	    }
+	    return node;
+	  }
+	
+	  classes.forEach(function(d) {
+	    find(d.name, d);
+	  });
+	
+	  return map[""];
+	}
+	
+	// Return a list of imports for the given array of nodes.
+	function packageImports(nodes) {
+	  var map = {},
+	      imports = [];
+	
+	  // Compute a map from name to node.
+	  nodes.forEach(function(d) {
+	    map[d.name] = d;
+	  });
+	
+	  // For each import, construct a link from the source to target node.
+	  nodes.forEach(function(d) {
+	    if (d.imports) d.imports.forEach(function(i) {
+	      imports.push({source: map[d.name], target: map[i]});
+	    });
+	  });
+	
+	  return imports;
+	}
+
+	// end functions
 
         }
+
       }
     };
   });

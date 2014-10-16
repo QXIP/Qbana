@@ -2,14 +2,14 @@
   <div class="editor-option">
 	<form>
 	  <h6>Source Field <tip>Field containing the source of the transaction (source IP address, source device, etc.)</tip></h6>
-	  <input bs-typeahead="fields.list" type="text" class="input-small" ng-model="panel.src_field" ng-change="set_refresh(true)">
+	  <input bs-typeahead="fields.list" type="text" class="input-medium" ng-model="panel.src_field" ng-change="set_refresh(true)">
 	</form>
   </div>
 
   <div class="editor-option">
 	<form>
 	  <h6>Target Field <tip>Field containing the destination of the transactions (destination IP address, destination device, etc.)</tip></h6>
-	  <input bs-typeahead="fields.list" type="text" class="input-small" ng-model="panel.dst_field" ng-change="set_refresh(true)">
+	  <input bs-typeahead="fields.list" type="text" class="input-medium" ng-model="panel.dst_field" ng-change="set_refresh(true)">
 	</form>
   </div>
   
@@ -26,4 +26,14 @@
 	  <input array-join type="text" class="input-small" ng-model="panel.exclude" ng-change="set_refresh(true)">
 	</form>
   </div>
+</div>
+
+<div class="editor-row">
+    <div class="section">
+      <h5>View Options</h5>
+      <div class="editor-option">
+        <label class="small">Style</label>
+        <select class="input-small" ng-model="panel.chart" ng-options="f for f in ['flows','edges']"></select></span>
+      </div>
+    </div>
 </div>

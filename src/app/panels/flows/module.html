@@ -1,6 +1,6 @@
 <div ng-controller='flows' ng-init="init()">
   <head>
-  	<script type="text/javascript" src="app/panels/flows/lib/sankey_overlap.js"></script>
+  	<script ng-show="panel.chart == 'flows'" type="text/javascript" src="app/panels/flows/lib/sankey_overlap.js"></script>
 	<style>
 	.node rect {
 	  cursor: move;
@@ -22,6 +22,55 @@
 	.link:hover {
 	  stroke-opacity: .5;
 	}
+
+	/* edges css */
+
+	.node_e {
+	  font: 300 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	  font-size: 0.8vw;
+	  fill: #777;
+	}
+	
+	.node_e:hover {
+	  font-size: 1vw;
+	  fill: #000;
+	}
+	
+	.link_e {
+	  stroke: steelblue;
+	  stroke-opacity: .4;
+	  fill: none;
+	  pointer-events: none;
+	}
+	
+	.node_e:hover,
+	.node--source,
+	.node--target {
+	  font-weight: 700;
+	}
+
+	.node--source {
+	  fill: #2ca02c;
+	}
+	
+	.node--target {
+	  fill: #d62728;
+	}
+	
+	.link--source,
+	.link--target {
+	  stroke-opacity: 1;
+	  stroke-width: 2px;
+	}
+	
+	.link--source {
+	  stroke: #d62728;
+	}
+	
+	.link--target {
+	  stroke: #2ca02c;
+	}
+
 	</style>
   </head>
   <div flows params="{{panel}}" ng-style="{height:panel.height||row.height}"></div>
