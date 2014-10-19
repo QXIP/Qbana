@@ -4,6 +4,8 @@ intended as a possible alternative to Kibana 3-4 and for users willing to use < 
 
 Qbana ships preloaded with extra features and dashboards for [nProbe](http://www.ntop.org/products/nprobe/) and its plugins.
 
+![Screenshot](http://i.imgur.com/9gXTKCd.png)
+
 ######<i>"Join the Ω"</i></font>
 
 ## Overview
@@ -34,7 +36,7 @@ The url entered here _must be reachable_ by your browser.
 3. Point your browser at your installation. If you're using Logstash with the default indexing
 configuration the included Kibana logstash interface should work nicely.
 
-![Screenshot](http://i.imgur.com/9gXTKCd.png)
+
 
 ### FAQ
 __Q__: Why doesnt it work? I have http://localhost:9200 in my config.js, my webserver and elasticsearch
