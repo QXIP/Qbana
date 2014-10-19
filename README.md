@@ -4,8 +4,6 @@ intended as a possible alternative to Kibana 3-4 and for users willing to use < 
 
 Qbana ships preloaded with extra features and dashboards for [nProbe](http://www.ntop.org/products/nprobe/) and its plugins.
 
-![Screenshot](http://i.imgur.com/9gXTKCd.png)
-
 ######<i>"Join the Ω"</i></font>
 
 ## Overview
@@ -23,6 +21,9 @@ access to it.
 
 ### Suggested
 * A reverse proxy to take care of security or a [hosted solution](http://facetflow.com) which does it for you
+
+### Mugshot
+![Screenshot](http://i.imgur.com/9gXTKCd.png)
 
 ### Docs
 
