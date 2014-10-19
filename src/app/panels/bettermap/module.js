@@ -240,11 +240,17 @@ function (angular, app, _, L, localRequire) {
               });
 
               // This could be made configurable?
-              L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg', {
+	      var MB_URL = 'http://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png';
+		var MB_ID = 'examples.map-20v6611k';
+	      var OSM_URL = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+              // L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg', {
+              L.tileLayer(OSM_URL, {
                 attribution: 'Data, imagery and map information provided by MapQuest, '+
                   'OpenStreetMap <http://www.openstreetmap.org/copyright> and contributors, ODbL',
                 maxZoom: 18,
-                minZoom: 2
+                minZoom: 2,
+		id: MB_ID
               }).addTo(map);
               layerGroup = new L.MarkerClusterGroup({maxClusterRadius:30});
             } else {
