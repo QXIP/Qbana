@@ -9,8 +9,15 @@
 	}
 	
 	.node text {
+	  fill: #000;
 	  pointer-events: none;
 	  text-shadow: 0 1px 0 #fff;
+	}
+
+	.node:hover text {
+	  fill: #fff;
+	  pointer-events: none;
+	  text-shadow: 0 1px 0 #000;
 	}
 	
 	.link {
@@ -26,13 +33,13 @@
 	/* edges css */
 
 	.node_e {
-	  font: 300 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
-	  font-size: 0.8vw;
+	  font: 300 10px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	  font-size: 0.7vw;
 	  fill: #777;
 	}
 	
 	.node_e:hover {
-	  font-size: 1vw;
+	  font-size: 0.9vw;
 	  fill: #000;
 	}
 	

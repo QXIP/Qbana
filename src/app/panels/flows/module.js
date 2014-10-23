@@ -453,7 +453,7 @@ define([
 
 		var diameter = height,
 		    radius = diameter / 2,
-		    innerRadius = radius - 120,
+		    innerRadius = radius - 140,
 		    margin = ( $(elem[0]).width() - $(elem[0]).height() ) / 2;
 
 		var cluster = d3.layout.cluster()
@@ -469,18 +469,19 @@ define([
 		    .radius(function(d) { return d.y; })
 		    .angle(function(d) { return d.x / 180 * Math.PI; });
 
+		var cent = (width - height) / 2;
 		d3.select(elem[0]).select("svg").remove();
 		var svg = d3.select(elem[0]).append("svg")
-		    .attr("width", diameter)
+		    .attr("width", width )
 		    .attr("height", diameter)
 		  .append("g")
-		    .attr("transform", "translate(" + radius + "," + radius + ")");
+		    .attr("transform", "translate(" + (radius+cent) + "," + radius + ")")
+		    .attr("style", 'margin-left:'+(width-height)/2+'px');
 
-		d3.select(elem[0])
-	    		.attr("style", 'margin-left:'+(width-height)/2+'px');
 
 		var link = svg.append("g").selectAll(".link_e"),
 		    node = svg.append("g").selectAll(".node_e");
+		
 
 		/*
 			// FORMAT
