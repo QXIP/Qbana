@@ -22,6 +22,9 @@ access to it.
 ### Suggested
 * A reverse proxy to take care of security or a [hosted solution](http://facetflow.com) which does it for you
 
+### Mugshot
+![Screenshot](http://i.imgur.com/9gXTKCd.png)
+
 ### Docs
 
 Documentation, panel options and tutorials can be found on the [WiKi](https://github.com/QXIP/Qbana/wiki)
@@ -33,6 +36,8 @@ http://localhost:9200__, but rather the fully qualified domain name of your elas
 The url entered here _must be reachable_ by your browser.
 3. Point your browser at your installation. If you're using Logstash with the default indexing
 configuration the included Kibana logstash interface should work nicely.
+
+
 
 ### FAQ
 __Q__: Why doesnt it work? I have http://localhost:9200 in my config.js, my webserver and elasticsearch
