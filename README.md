@@ -1,6 +1,6 @@
 # ![qb](https://raw.githubusercontent.com/QXIP/Qbana/master/src/img/qb.png) 
-Qbana (Ω) is an indipendent Kibana 3 fork with several additional features and aggregations support,
-intended as a possible alternative to Kibana 3-4 and for users willing to use < 1.4 ES "off-the-grid"
+Qbana (Ω) is an indipendent Kibana 3 fork with several additional features and client aggregations support,
+intended as dedicated tool for nProbe users as well as a possible alternative to Kibana 3-4 and for ES users willing to live "off-the-grid"
 
 Qbana ships preloaded with extra features and dashboards for [nProbe](http://www.ntop.org/products/nprobe/) and its plugins.
 
