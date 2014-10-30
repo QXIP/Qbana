@@ -17,10 +17,8 @@
 	var time = new Date().getTime();
 	el.time = time;
 	localStorage.setItem('hist_elem_'+time,JSON.stringify(el));
-	console.log('Backup!',el);
 	el.content='GET _search \n'+JSON.stringify({{inspector}});
 	localStorage.setItem('editor_state',JSON.stringify(el));
-	console.log('Set!',el);
 	window.open('./sense');
 	} else { alert('Please configure url+auth in Sense before using'); }
   ">Open in Sense</button>
