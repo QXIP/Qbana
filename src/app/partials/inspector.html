@@ -11,5 +11,18 @@
   
 </div>
 <div class="modal-footer">
+  <button type="button" class="btn btn-success" ng-click="dismiss()" onclick="
+	var el=JSON.parse( localStorage.getItem('editor_state') );
+	if (el.content){
+	var time = new Date().getTime();
+	el.time = time;
+	localStorage.setItem('hist_elem_'+time,JSON.stringify(el));
+	console.log('Backup!',el);
+	el.content='GET _search \n'+JSON.stringify({{inspector}});
+	localStorage.setItem('editor_state',JSON.stringify(el));
+	console.log('Set!',el);
+	window.open('./sense');
+	} else { alert('Please configure url+auth in Sense before using'); }
+  ">Open in Sense</button>
   <button type="button" class="btn btn-success" ng-click="dismiss()">Close</button>
 </div>
