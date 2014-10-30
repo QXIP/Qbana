@@ -1,5 +1,5 @@
 # ![qb](https://raw.githubusercontent.com/QXIP/Qbana/master/src/img/qb.png) 
-Qbana (Ω) is an indipendent Kibana 3 fork with several additional features, integrated Sense Inspector and client aggregations support, intended as dedicated tool for nProbe users as well as a possible alternative to Kibana for ES users willing to live "off-the-grid"
+Qbana (Ω) is an indipendent Kibana 3 fork with several additional features, new Panels, integrated Sense Inspector and client/server aggregations support, intended as dedicated tool for nProbe users as well as a possible alternative to Kibana for ES users willing to live "off-the-grid"
 
 Qbana ships preloaded with extra features and dashboards for [nProbe](http://www.ntop.org/products/nprobe/) and its plugins.
 
@@ -54,7 +54,7 @@ __Q__: I'm running ES on a secured cluster with authentication. How do I configu
 __A__: Use in your config.js: **elasticsearch: {server: "https://your.elasticsearch.server:80", withCredentials: true},**
 
 __Q__: I'm running ES on a secured cluster with authentication. How do I configure Sense?  
-__A__: Open Sense (/sense) and perform the initial configuration using **https://user:pass@server:port**
+__A__: Open Sense (/sense) and perform an initial query/configuration using **https://user:pass@server:port**
 
 
 
