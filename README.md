@@ -1,7 +1,9 @@
 # ![qb](https://raw.githubusercontent.com/QXIP/Qbana/master/src/img/qb.png) 
-Qbana (Ω) is an indipendent Kibana 3 fork with several additional features, new Panels, integrated Sense Inspector and client/server aggregations support, intended as dedicated tool for nProbe users as well as a possible alternative to Kibana for ES users willing to live "off-the-grid"
+Qbana (Ω) is an indipendent Kibana 3 fork with several additional features, new Panels, integrated Sense and client/server aggregations support, intended as dedicated tool for nProbe users as well as a possible alternative to Kibana for ES users willing to live "off-the-grid"
 
-Qbana ships preloaded with extra features and dashboards for [nProbe](http://www.ntop.org/products/nprobe/) and its plugins.
+Qbana ships preloaded with features and dashboards created for [nProbe](http://www.ntop.org/products/nprobe/) and its many plugins.
+
+Qbana ships with a developer console (Sense) linked to Inspect which allows you to easily issue calls to Elasticsearch’s REST API. The console offers quick context sensitive suggestions and is optimized for prototyping queries for your application, issuing management commands or using the suggestion feature to explore the different options the API offers.
 
 ######<i>"Join the Ω"</i></font>
 
