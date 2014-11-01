@@ -4,7 +4,8 @@ Qbana (Ω) is an indipendent Kibana 3 fork with several additional features, new
 Qbana ships: 
 * Dashboards for [nProbe v7](http://www.ntop.org/products/nprobe/) and its many plugins *(HTTP, DNS, SIP, RTP, PROCESSES, etc)*
 * Features for client-side aggregations, multi-value term_stats, additional data type interpreters and more
-* Developer console (Sense) linked to Inspect which allows you to easily issue calls to Elasticsearch’s REST API
+* Additional Panels and D3 Visualizers *(Force, Flows, Histograms, MuchBetterMaps, etc)*
+* Developer console *(Sense)* linked to Inspect which allows you to easily issue calls to Elasticsearch’s REST API
 * Flexibility to add/extend/change whatever you want without dealing with anyone's businessplans
 
 ######<i>"Join the Ω"</i></font>
