@@ -55,7 +55,7 @@ define([
         mode        : 'all',
         ids         : []
       },
-      style   : { "font-size": '24pt'},
+      style   : { "font-size": '20pt'},
       format: 'number',
       mode: 'count',
       display_breakdown: 'yes',
@@ -66,14 +66,14 @@ define([
       value_name: 'Value',
       spyable     : true,
       show: {
-        count: true,
+        count: false,
         min: true,
         max: true,
         mean: true,
-        std_deviation: true,
-        sum_of_squares: true,
+        std_deviation: false,
+        sum_of_squares: false,
         total: true,
-        variance: true
+        variance: false
       }
     };
 
@@ -124,101 +124,163 @@ define([
         boolQuery = boolQuery.should(querySrv.toEjsObj(q));
       });
 
-      // console.log('FIELD(s):',$scope.panel.field);
+      var multimode = 0;
 
-      _.each($scope.panel.field, function (field) {
+      // Single-fy if single
+      if ($scope.panel.field instanceof Array && $scope.panel.field.length === 1) { 
 
-      	// console.log('FIELD:',field);
+	      $scope.panel.field.join();
 
-       _.each(queries, function (q) {
+	      request = request
+	        .facet($scope.ejs.StatisticalFacet('stats')
+	          .field($scope.panel.field)
+	          .facetFilter($scope.ejs.QueryFilter(
+	            $scope.ejs.FilteredQuery(
+	              boolQuery,
+	              filterSrv.getBoolFilter(filterSrv.ids())
+	              )))).size(0);
+	
+	      _.each(queries, function (q) {
+	        var alias = q.alias || q.query;
+	        var query = $scope.ejs.BoolQuery();
+	        query.should(querySrv.toEjsObj(q));
+	        request.facet($scope.ejs.StatisticalFacet('stats_'+alias)
+	          .field($scope.panel.field)
+	          .facetFilter($scope.ejs.QueryFilter(
+	            $scope.ejs.FilteredQuery(
+	              query,
+	              filterSrv.getBoolFilter(filterSrv.ids())
+	            )
+	          ))
+	        );
+	      });
 
-      	  // var alias = q.alias || q.query;
-      	  var alias = field;
-      	  var query = $scope.ejs.BoolQuery();
-      	  query.should(querySrv.toEjsObj(q));
-      	  request = request.facet($scope.ejs.StatisticalFacet('stats_'+alias)
-      	    .field(field)
-      	  //  .field($scope.panel.field)
-      	    .facetFilter($scope.ejs.QueryFilter(
-      	      $scope.ejs.FilteredQuery(
-      	        query,
-      	        filterSrv.getBoolFilter(filterSrv.ids())
-      	      )
-      	    ))
-      	  );
 
-      	});
+      }	else {
 
-      });
+	// console.log('Multi-Search');
+	multimode = 1;
 
-	request = request.size(0);
+            _.each($scope.panel.field, function (ff) {
+	      request = request
+	        .facet($scope.ejs.StatisticalFacet('stats-'+ff)
+	          .field(ff)
+	          .facetFilter($scope.ejs.QueryFilter(
+	            $scope.ejs.FilteredQuery(
+	              boolQuery,
+	              filterSrv.getBoolFilter(filterSrv.ids())
+	              ))))
+            });
+	    request = request.size(0);
+	
+            _.each($scope.panel.field, function (ff) {
+	      _.each(queries, function (q) {
+	        var alias = q.alias || q.query;
+	        var query = $scope.ejs.BoolQuery();
+	        query.should(querySrv.toEjsObj(q));
+	        request.facet($scope.ejs.StatisticalFacet('stats-'+ff+'_'+alias)
+	          .field(ff)
+	          .facetFilter($scope.ejs.QueryFilter(
+	            $scope.ejs.FilteredQuery(
+	              query,
+	              filterSrv.getBoolFilter(filterSrv.ids())
+	            )
+	          ))
+	        );
+	      });
+	    });
+
+      }
 
       // Populate the inspector panel
       $scope.inspector = angular.toJson(JSON.parse(request.toString()),true);
 
       results = request.doSearch();
 
-      results.then(function(results) {
+      if (multimode == 0) { 
 
-      // console.log('RESULTS:',results);
+	// console.log('Single-Search');
 
-        $scope.panelMeta.loading = false;
-	var value = 0;
-	var rows; 
-	var sumray = [];
-
-	_.each(results.facets, function(f) {
-		// console.log('FACET:',f);
-		if (f.count < 1) return;
-        	value = value + f[$scope.panel.mode];
-		// merge values
-		for (var attrname in f) { 
-		     if(!sumray[attrname]) {
-			sumray[attrname] = f[attrname];
-		     } else { sumray[attrname] += f[attrname]; } 
-		}
-        });
-
-        rows = queries.map(function (q) {
-		  // console.log('ROW:',q);
-	          var obj;
+	      results.then(function(results) {
+	        $scope.panelMeta.loading = false;
+	        var value = results.facets.stats[$scope.panel.mode];
+	
+	        var rows = queries.map(function (q) {
 	          var alias = q.alias || q.query;
-	          obj = _.clone(q);
+	          var obj = _.clone(q);
+	          obj.label = alias;
+	          obj.Label = alias.toLowerCase(); //sort field
+	          obj.value = results.facets['stats_'+alias];
+	          obj.Value = results.facets['stats_'+alias]; //sort field
+	          return obj;
+	        });
+
+	        $scope.data = {
+	          value: value,
+	          rows: rows
+	        };
+	
+	        // console.log($scope.data);
+	
+	        $scope.$emit('render');
+	      });
+
+      } else {
+
+	// console.log('Multi-Search');
+
+	 var value = 0;
+	 var rows;
+	 $scope.data = null;
+
+	 results.then(function(results) {
+
+           _.each($scope.panel.field, function (ff) {
+	        $scope.panelMeta.loading = false;
+	        value += results.facets['stats-'+ff][$scope.panel.mode];
+  	   });
+
+	   rows = queries.map(function (q) {
+	          var alias = q.alias || q.query;
+		  var sumray = [];
+		  _.each($scope.panel.field, function (ff) {
+			var arr = results.facets['stats-'+ff+'_'+alias];
+			for (var attrname in arr) { 
+		     		if(!sumray[attrname]) {
+				  sumray[attrname] = arr[attrname];
+		     		} else { sumray[attrname] += arr[attrname]; } 
+		        }			
+		  });
+
+	          var obj = _.clone(q);
 	          obj.label = alias;
 	          obj.Label = alias.toLowerCase(); //sort field
 	          obj.value = sumray;
 	          obj.Value = sumray; //sort field
 	          return obj;
+	   });
+
+	   if($scope.data){
+		           $scope.data = {
+		             value: value,
+		             rows: $scope.data.rows.concat(rows)
+		           };
+
+		   } else {
+		           $scope.data = {
+		             value: value,
+		             rows: rows
+		           };
+	   }
+
+           // console.log($scope.data);
+           $scope.$emit('render');
+
+	 });
 
 
-		/*
-		  _.each(results.facets, function(f) {
-		     // console.log('LINE:',f);
-			if (f.count < 1) return;
-		          var alias = q.alias || q.query;
-		          obj = _.clone(q);
-		          obj.label = alias;
-		          obj.Label = alias.toLowerCase(); //sort field
-		          obj.value = sumray;
-		          obj.Value = sumray; //sort field
-		          return obj;
-	          });
-	          return obj;
+      }
 
-		*/
-
-        });
-
-
-        $scope.data = {
-          value: value,
-          rows: rows
-        };
-
-        // console.log($scope.data);
-
-        $scope.$emit('render');
-      });
     };
 
     $scope.set_refresh = function (state) {
