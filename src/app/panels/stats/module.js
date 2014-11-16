@@ -5,7 +5,7 @@
   ### Parameters
   * format :: The format of the value returned. (Default: number)
   * style :: The font size of the main number to be displayed.
-  * mode :: The aggregate value to use for display
+  * mode :: The aggergate value to use for display
   * spyable ::  Dislay the 'eye' icon that show the last elasticsearch query
 
 */
@@ -55,7 +55,7 @@ define([
         mode        : 'all',
         ids         : []
       },
-      style   : { "font-size": '20pt'},
+      style   : { "font-size": '24pt'},
       format: 'number',
       mode: 'count',
       display_breakdown: 'yes',
@@ -66,14 +66,14 @@ define([
       value_name: 'Value',
       spyable     : true,
       show: {
-        count: false,
+        count: true,
         min: true,
         max: true,
         mean: true,
-        std_deviation: false,
-        sum_of_squares: false,
+        std_deviation: true,
+        sum_of_squares: true,
         total: true,
-        variance: false
+        variance: true
       }
     };
 
@@ -159,27 +159,23 @@ define([
       }	else {
 
 	// console.log('Multi-Search');
-	multimode = 1;
+	multimode = 0;
 
-            _.each($scope.panel.field, function (ff) {
 	      request = request
-	        .facet($scope.ejs.StatisticalFacet('stats-'+ff)
-	          .field(ff)
+	        .facet($scope.ejs.StatisticalFacet('stats')
+	          .fields($scope.panel.field)
 	          .facetFilter($scope.ejs.QueryFilter(
 	            $scope.ejs.FilteredQuery(
 	              boolQuery,
 	              filterSrv.getBoolFilter(filterSrv.ids())
-	              ))))
-            });
-	    request = request.size(0);
-	
-            _.each($scope.panel.field, function (ff) {
+	              )))).size(0);
+
 	      _.each(queries, function (q) {
 	        var alias = q.alias || q.query;
 	        var query = $scope.ejs.BoolQuery();
 	        query.should(querySrv.toEjsObj(q));
-	        request.facet($scope.ejs.StatisticalFacet('stats-'+ff+'_'+alias)
-	          .field(ff)
+	        request.facet($scope.ejs.StatisticalFacet('stats_'+alias)
+	          .fields($scope.panel.field)
 	          .facetFilter($scope.ejs.QueryFilter(
 	            $scope.ejs.FilteredQuery(
 	              query,
@@ -188,7 +184,7 @@ define([
 	          ))
 	        );
 	      });
-	    });
+
 
       }
 
@@ -197,9 +193,6 @@ define([
 
       results = request.doSearch();
 
-      if (multimode == 0) { 
-
-	// console.log('Single-Search');
 
 	      results.then(function(results) {
 	        $scope.panelMeta.loading = false;
@@ -225,60 +218,8 @@ define([
 	        $scope.$emit('render');
 	      });
 
-      } else {
-
-	// console.log('Multi-Search');
-
-	 var value = 0;
-	 var rows;
-
-	 results.then(function(results) {
-
-           _.each($scope.panel.field, function (ff) {
-	        $scope.panelMeta.loading = false;
-	        value += results.facets['stats-'+ff][$scope.panel.mode];
-  	   });
-
-	   rows = queries.map(function (q) {
-	          var alias = q.alias || q.query;
-		  var sumray = [];
-		  _.each($scope.panel.field, function (ff) {
-			var arr = results.facets['stats-'+ff+'_'+alias];
-			for (var attrname in arr) { 
-		     		if(!sumray[attrname]) {
-				  sumray[attrname] = arr[attrname];
-		     		} else { sumray[attrname] += arr[attrname]; } 
-		        }			
-		  });
-
-	          var obj = _.clone(q);
-	          obj.label = alias;
-	          obj.Label = alias.toLowerCase(); //sort field
-	          obj.value = sumray;
-	          obj.Value = sumray; //sort field
-	          return obj;
-	   });
-
-	   if($scope.data){
-		           $scope.data = {
-		             value: value,
-		             rows: rows
-		           };
-
-		   } else {
-		           $scope.data = {
-		             value: value,
-		             rows: rows
-		           };
-	   }
-
            // console.log($scope.data);
            $scope.$emit('render');
-
-	 });
-
-
-      }
 
     };
 
