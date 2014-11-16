@@ -231,7 +231,6 @@ define([
 
 	 var value = 0;
 	 var rows;
-	 $scope.data = null;
 
 	 results.then(function(results) {
 
