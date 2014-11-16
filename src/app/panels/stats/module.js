@@ -262,7 +262,7 @@ define([
 	   if($scope.data){
 		           $scope.data = {
 		             value: value,
-		             rows: $scope.data.rows.concat(rows)
+		             rows: rows
 		           };
 
 		   } else {
