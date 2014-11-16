@@ -5,7 +5,7 @@
   ### Parameters
   * format :: The format of the value returned. (Default: number)
   * style :: The font size of the main number to be displayed.
-  * mode :: The aggergate value to use for display
+  * mode :: The aggregate value to use for display
   * spyable ::  Dislay the 'eye' icon that show the last elasticsearch query
 
 */
@@ -59,6 +59,7 @@ define([
       format: 'number',
       mode: 'count',
       display_breakdown: 'yes',
+      field: [],
       sort_field: '',
       sort_reverse: false,
       label_name: 'Query',
@@ -87,7 +88,7 @@ define([
     };
 
     $scope.set_sort = function(field) {
-      console.log(field);
+      // console.log(field);
       if($scope.panel.sort_field === field && $scope.panel.sort_reverse === false) {
         $scope.panel.sort_reverse = true;
       } else if($scope.panel.sort_field === field && $scope.panel.sort_reverse === true) {
@@ -123,29 +124,34 @@ define([
         boolQuery = boolQuery.should(querySrv.toEjsObj(q));
       });
 
-      request = request
-        .facet($scope.ejs.StatisticalFacet('stats')
-          .field($scope.panel.field)
-          .facetFilter($scope.ejs.QueryFilter(
-            $scope.ejs.FilteredQuery(
-              boolQuery,
-              filterSrv.getBoolFilter(filterSrv.ids())
-              )))).size(0);
+      // console.log('FIELD(s):',$scope.panel.field);
 
-      _.each(queries, function (q) {
-        var alias = q.alias || q.query;
-        var query = $scope.ejs.BoolQuery();
-        query.should(querySrv.toEjsObj(q));
-        request.facet($scope.ejs.StatisticalFacet('stats_'+alias)
-          .field($scope.panel.field)
-          .facetFilter($scope.ejs.QueryFilter(
-            $scope.ejs.FilteredQuery(
-              query,
-              filterSrv.getBoolFilter(filterSrv.ids())
-            )
-          ))
-        );
+      _.each($scope.panel.field, function (field) {
+
+      	// console.log('FIELD:',field);
+
+       _.each(queries, function (q) {
+
+      	  // var alias = q.alias || q.query;
+      	  var alias = field;
+      	  var query = $scope.ejs.BoolQuery();
+      	  query.should(querySrv.toEjsObj(q));
+      	  request = request.facet($scope.ejs.StatisticalFacet('stats_'+alias)
+      	    .field(field)
+      	  //  .field($scope.panel.field)
+      	    .facetFilter($scope.ejs.QueryFilter(
+      	      $scope.ejs.FilteredQuery(
+      	        query,
+      	        filterSrv.getBoolFilter(filterSrv.ids())
+      	      )
+      	    ))
+      	  );
+
+      	});
+
       });
+
+	request = request.size(0);
 
       // Populate the inspector panel
       $scope.inspector = angular.toJson(JSON.parse(request.toString()),true);
@@ -153,25 +159,63 @@ define([
       results = request.doSearch();
 
       results.then(function(results) {
-        $scope.panelMeta.loading = false;
-        var value = results.facets.stats[$scope.panel.mode];
 
-        var rows = queries.map(function (q) {
-          var alias = q.alias || q.query;
-          var obj = _.clone(q);
-          obj.label = alias;
-          obj.Label = alias.toLowerCase(); //sort field
-          obj.value = results.facets['stats_'+alias];
-          obj.Value = results.facets['stats_'+alias]; //sort field
-          return obj;
+      // console.log('RESULTS:',results);
+
+        $scope.panelMeta.loading = false;
+	var value = 0;
+	var rows; 
+	var sumray = [];
+
+	_.each(results.facets, function(f) {
+		// console.log('FACET:',f);
+		if (f.count < 1) return;
+        	value = value + f[$scope.panel.mode];
+		// merge values
+		for (var attrname in f) { 
+		     if(!sumray[attrname]) {
+			sumray[attrname] = f[attrname];
+		     } else { sumray[attrname] += f[attrname]; } 
+		}
         });
+
+        rows = queries.map(function (q) {
+		  // console.log('ROW:',q);
+	          var obj;
+	          var alias = q.alias || q.query;
+	          obj = _.clone(q);
+	          obj.label = alias;
+	          obj.Label = alias.toLowerCase(); //sort field
+	          obj.value = sumray;
+	          obj.Value = sumray; //sort field
+	          return obj;
+
+
+		/*
+		  _.each(results.facets, function(f) {
+		     // console.log('LINE:',f);
+			if (f.count < 1) return;
+		          var alias = q.alias || q.query;
+		          obj = _.clone(q);
+		          obj.label = alias;
+		          obj.Label = alias.toLowerCase(); //sort field
+		          obj.value = sumray;
+		          obj.Value = sumray; //sort field
+		          return obj;
+	          });
+	          return obj;
+
+		*/
+
+        });
+
 
         $scope.data = {
           value: value,
           rows: rows
         };
 
-        console.log($scope.data);
+        // console.log($scope.data);
 
         $scope.$emit('render');
       });

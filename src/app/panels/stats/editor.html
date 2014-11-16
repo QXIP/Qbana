@@ -5,8 +5,8 @@
       <select ng-change="set_refresh(true)" class="input-small" ng-model="panel.mode" ng-options="f for f in modes"></select>
     </div>
     <div class="editor-option">
-      <label class="small">Field <tip>This field must contain a numeric value</tip></label>
-        <input ng-change="set_refresh(true)" placeholder="Start typing" bs-typeahead="fields.list" type="text" class="input-large" ng-model="panel.field">
+      <label class="small">Field <tip>This field supports comma separated numeric values</tip></label>
+        <input array-join ng-change="set_refresh(true)" placeholder="Start typing" bs-typeahead="fields.list" type="text" class="input-large" ng-model="panel.field">
     </div>
     <div class="editor-option">
       <label class="small">Unit</label>
