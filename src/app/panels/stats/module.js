@@ -5,7 +5,7 @@
   ### Parameters
   * format :: The format of the value returned. (Default: number)
   * style :: The font size of the main number to be displayed.
-  * mode :: The aggergate value to use for display
+  * mode :: The aggregate value to use for display
   * spyable ::  Dislay the 'eye' icon that show the last elasticsearch query
 
 */
@@ -55,7 +55,7 @@ define([
         mode        : 'all',
         ids         : []
       },
-      style   : { "font-size": '24pt'},
+      style   : { "font-size": '20pt'},
       format: 'number',
       mode: 'count',
       display_breakdown: 'yes',
@@ -70,10 +70,10 @@ define([
         min: true,
         max: true,
         mean: true,
-        std_deviation: true,
-        sum_of_squares: true,
+        std_deviation: false,
+        sum_of_squares: false,
         total: true,
-        variance: true
+        variance: false
       }
     };
 
@@ -124,9 +124,7 @@ define([
         boolQuery = boolQuery.should(querySrv.toEjsObj(q));
       });
 
-      var multimode = 0;
-
-      // Single-fy if single
+      // Field or Fields query?
       if ($scope.panel.field instanceof Array && $scope.panel.field.length === 1) { 
 
 	      $scope.panel.field.join();
@@ -159,7 +157,6 @@ define([
       }	else {
 
 	// console.log('Multi-Search');
-	multimode = 0;
 
 	      request = request
 	        .facet($scope.ejs.StatisticalFacet('stats')
@@ -192,7 +189,6 @@ define([
       $scope.inspector = angular.toJson(JSON.parse(request.toString()),true);
 
       results = request.doSearch();
-
 
 	      results.then(function(results) {
 	        $scope.panelMeta.loading = false;
