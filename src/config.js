@@ -78,6 +78,7 @@ function (Settings) {
       'sparklines',
       'flare',
       'flows',
+      'bullet',
       'heatmap'
     ]
   });
