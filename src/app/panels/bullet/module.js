@@ -47,7 +47,7 @@ define([
         {title:'Queries', src:'app/partials/querySelect.html'}
       ],
       status: 'Beta',
-      description: 'A statistical panel for displaying aggregations using the Elastic Search statistical facet query.'
+      description: 'A statistical panel for displaying Bullet Chart aggregations using the Elastic Search statistical facet query. Designed by Stephen Few, a bullet chart provides a rich display of data in a small space. A variation on a bar chart, bullet charts compare a given quantitative measure (such as profit or revenue) against qualitative ranges (e.g., poor, satisfactory, good) and related markers (e.g., the same measure a year ago)'
     };
 
     $scope.modes = ['count','min','max','mean','total','variance','std_deviation','sum_of_squares'];
@@ -311,7 +311,7 @@ define([
 
 	  var style = scope.dashboard.current.style;
 
-	  var margin = {top: 10, right: 20, bottom: 30, left: 60},
+	  var margin = {top: 10, right: 20, bottom: 40, left: 60},
 	    width = $(elem[0]).width() - margin.left - margin.right,
 	    height = $(elem[0]).height() - margin.top - margin.bottom;
 
