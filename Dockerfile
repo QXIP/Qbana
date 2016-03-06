@@ -5,6 +5,7 @@ RUN apt-get update
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get install -y nginx-full wget
 
-RUN ADD /src /usr/local/nginx/html
+RUN wget https://github.com/QXIP/Qbana/archive/master.tar.gz -O /tmp/qbana.tar.gz && \
+    tar zxf /tmp/qbana.tar.gz && mv Qbana-master/src/* /usr/share/nginx/html
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 EXPOSE 80
-ENTRYPOINT /usr/bin/nginx -g 'daemon off;'
